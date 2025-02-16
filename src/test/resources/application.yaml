@@ -11,12 +11,3 @@ spring:
       ddl-auto: update
     show-sql: false
 
-myclub:
-  url: https://myporn.club
-  tmp:
-    path: videos/
-
-nextcloud:
-  url: https://next.davidperezmillan.com
-  username: david
-  password: ${NEXTCLOUD_PASSWORD:}
