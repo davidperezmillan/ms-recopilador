@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+    app:
+        container_name: ${CONTAINER_NAME} # Nombre del contenedor: ${IMAGE_NAME}
+        image: ${IMAGE_NAME}:${VERSION}  # Usar la variable IMAGE_NAME del archivo .env
+#        build:
+#            context: .
+#            dockerfile: Dockerfile
+        ports:
+            - "${PORT}:8080"  # Usar la variable PORT del archivo .env
+        environment:
+            SPRING_PROFILES_ACTIVE: "${SPRING_PROFILE}"  # Usar la variable SPRING_PROFILE del archivo .env
+            NEXTCLOUD_PASSWORD: "${NEXTCLOUD_PASSWORD}" # Usar la variable NEXTCLOUD_KEY del archivo .env
+        restart: always

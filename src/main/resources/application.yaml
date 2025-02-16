@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: ms-black
+  datasource:
+    url: jdbc:mariadb://192.168.68.195:3306/shows
+    username: apps
+    password: apps
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  server:
+    port: 8080
+
+
+
+
+myclub:
+  url: https://myporn.club
+  tmp:
+    path: videos/
+
+nextcloud:
+  url: https://next.davidperezmillan.com
+  username: david
+  password: ${NEXTCLOUD_PASSWORD:}
