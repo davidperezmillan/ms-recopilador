@@ -9,18 +9,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/scrapers")
-public class ScraperController {
+@RequestMapping()
+public class EnabledController {
 
-    private final ScraperLauncherService scraperLauncherService;
-
-    public ScraperController(ScraperLauncherService scraperLauncherService) {
-        this.scraperLauncherService = scraperLauncherService;
+    //Hello controller
+    @GetMapping
+    public String hello() {
+        return "Hello World!";
     }
 
-    @GetMapping("/all")
-    public CompletableFuture<List<String>> runAllScrapers() {
-        return scraperLauncherService.launchAllScrapers();
-    }
 }
 
