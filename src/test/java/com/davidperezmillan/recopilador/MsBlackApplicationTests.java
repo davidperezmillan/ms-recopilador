@@ -1,4 +1,4 @@
-package com.davidperezmillan.application;
+package com.davidperezmillan.recopilador;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

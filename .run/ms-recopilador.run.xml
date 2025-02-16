@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ms-recopilador" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="com.davidperezmillan.application.Application" />
-    <module name="ms-white" />
+    <option name="MAIN_CLASS_NAME" value="com.davidperezmillan.recopilador.Application" />
+    <module name="ms-recopilador" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
