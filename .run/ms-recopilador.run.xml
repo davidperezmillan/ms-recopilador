@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ms-white" type="Application" factoryName="Application">
+  <configuration default="false" name="ms-recopilador" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.davidperezmillan.application.Application" />
     <module name="ms-white" />
     <method v="2">
