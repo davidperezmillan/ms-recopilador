@@ -1,9 +1,11 @@
 package com.davidperezmillan.recopilador.apllication.port;
 
+import com.davidperezmillan.recopilador.domain.models.Serie;
+
 import java.util.List;
 
 public interface ScraperPort {
 
-    List<String> scrape();
+    List<Serie> scrapeAllSeries();
 
 }

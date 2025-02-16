@@ -1,6 +1,10 @@
 package com.davidperezmillan.recopilador.infrastructure.scraper.pagina1.services;
 
 import com.davidperezmillan.recopilador.apllication.port.ScraperPort;
+import com.davidperezmillan.recopilador.domain.models.Serie;
+
+import com.davidperezmillan.recopilador.infrastructure.scraper.mappers.ScrapSerieMapper;
+import com.davidperezmillan.recopilador.infrastructure.scraper.models.ScrapSerie;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,8 +13,11 @@ import java.util.List;
 public class Pagina1Service implements ScraperPort {
 
     @Override
-    public List<String> scrape() {
-        return List.of("Scrapeando página 1...");
+    public List<Serie> scrapeAllSeries() {
+        ScrapSerie scrapSerie = new ScrapSerie();
+        scrapSerie.setTitle("Serie 1");
+
+        return List.of(ScrapSerieMapper.map(scrapSerie));
         // Lógica de scraping para la página 1
     }
 }
