@@ -1,4 +1,4 @@
-package com.davidperezmillan.application.infrastructure.config;
+package com.davidperezmillan.recopilador.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

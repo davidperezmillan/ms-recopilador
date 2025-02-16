@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.davidperezmillan</groupId>
-	<artifactId>ms-white</artifactId>
+	<artifactId>ms-recopilador</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ms-black</name>
 	<description>Demo project for Spring Boot</description>
