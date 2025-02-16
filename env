@@ -1,5 +1,5 @@
 CONTAINER_NAME=ms-recopilador
 IMAGE_NAME=davidperez01/ms-recopilador
 VERSION=latest
-PORT=8083
+PORT=7000
 SPRING_PROFILE=prod
