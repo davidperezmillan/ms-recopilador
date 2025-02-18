@@ -1,7 +1,7 @@
-package com.davidperezmillan.recopilador.infrastructure.web.controller;
+package com.davidperezmillan.recopilador.infrastructure.web.media.mappers;
 
 import com.davidperezmillan.recopilador.domain.models.Serie;
-import com.davidperezmillan.recopilador.infrastructure.web.controller.dtos.SerieResponse;
+import com.davidperezmillan.recopilador.infrastructure.web.media.dtos.SerieResponse;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;

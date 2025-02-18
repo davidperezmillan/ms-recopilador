@@ -1,4 +1,4 @@
-package com.davidperezmillan.recopilador.infrastructure.web.controller;
+package com.davidperezmillan.recopilador.infrastructure.web.media.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;

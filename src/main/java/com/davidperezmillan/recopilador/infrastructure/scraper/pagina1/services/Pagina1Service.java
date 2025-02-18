@@ -1,6 +1,7 @@
 package com.davidperezmillan.recopilador.infrastructure.scraper.pagina1.services;
 
 import com.davidperezmillan.recopilador.apllication.port.ScraperPort;
+import com.davidperezmillan.recopilador.domain.models.Pelicula;
 import com.davidperezmillan.recopilador.domain.models.Serie;
 
 import com.davidperezmillan.recopilador.infrastructure.scraper.mappers.ScrapSerieMapper;
@@ -19,5 +20,10 @@ public class Pagina1Service implements ScraperPort {
 
         return List.of(ScrapSerieMapper.map(scrapSerie));
         // Lógica de scraping para la página 1
+    }
+
+    @Override
+    public List<Pelicula> scrapeAllMovies() {
+        return List.of();
     }
 }

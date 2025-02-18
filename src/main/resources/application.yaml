@@ -2,7 +2,7 @@ spring:
   application:
     name: ms-recopilador
   datasource:
-    url: jdbc:mariadb://192.168.68.195:3306/shows
+    url: jdbc:mariadb://192.168.68.195:3306/develop
     username: apps
     password: apps
     driver-class-name: org.mariadb.jdbc.Driver
