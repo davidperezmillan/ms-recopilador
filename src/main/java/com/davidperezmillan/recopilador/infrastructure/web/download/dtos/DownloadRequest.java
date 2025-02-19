@@ -1,4 +1,4 @@
-package com.davidperezmillan.recopilador.infrastructure.web.transmission.dtos;
+package com.davidperezmillan.recopilador.infrastructure.web.download.dtos;
 
 import lombok.Data;
 

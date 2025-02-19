@@ -6,6 +6,8 @@ import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torre
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.repositories.TorrentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TorrentService {
 
@@ -21,5 +23,9 @@ public class TorrentService {
             return true;
         }
         return false;
+    }
+
+    public List<Torrent> getAllTorrents() {
+        return torrentRepository.findAll();
     }
 }
