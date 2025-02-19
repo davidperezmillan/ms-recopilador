@@ -1,10 +1,13 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: ms-recopilador
   datasource:
     url: jdbc:mariadb://192.168.68.195:3306/develop
     username: apps
-    password: apps
+    password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
@@ -13,5 +16,3 @@ spring:
       ddl-auto: update
     show-sql: false
 
-  server:
-    port: 8080
