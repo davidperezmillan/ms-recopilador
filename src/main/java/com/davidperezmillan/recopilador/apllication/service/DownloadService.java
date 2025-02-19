@@ -2,6 +2,7 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.DownloadUseCase;
 import com.davidperezmillan.recopilador.domain.models.Download;
+import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.mappers.TorrentMapper;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.services.TorrentService;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.services.TransmissionService;
@@ -26,20 +27,18 @@ public class DownloadService implements DownloadUseCase {
     }
 
     public boolean addDownload(Download download) {
-        return torrentService.addTorrent(download);
+        torrentService.addTorrent(download);
+        return true;
     }
-
-
     public void downloadAllTorrent() throws TransmissionException {
         // get all torrents
         List<Torrent> torrents = torrentService.getAllTorrents();
-
         // Download torrent
         // Add torrent to transmission
         try {
             transmissionServerService.setTransmission(transmissionService.findbyId(1L));
             for (Torrent torrent : torrents) {
-                transmissionServerService.addTorrent(torrent);
+                torrentService.save(transmissionServerService.addTorrent(torrent));
             }
         } catch (TransmissionException e) {
             throw e;

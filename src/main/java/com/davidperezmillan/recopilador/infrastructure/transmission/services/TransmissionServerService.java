@@ -92,7 +92,7 @@ public class TransmissionServerService {
     }
 
 
-    public void addTorrent(Torrent torrent) throws TransmissionException {
+    public Torrent addTorrent(Torrent torrent) throws TransmissionException {
         try {
             if (sessionId == null) {
                 HttpHeaders headers = createHeaders();
@@ -135,7 +135,7 @@ public class TransmissionServerService {
                 torrent.setIdTransmission(transmissionTorrent.getId());
                 torrent.setHashString(transmissionTorrent.getHashString());
                 torrent.setPercentDone(transmissionTorrent.getPercentDone());
-                return;
+                return torrent;
             }
             log.warn("Error al añadir el torrent: {}", respuesta.getBody().getResult());
             torrent.setStatus(StatusTorrent.PENDING);
@@ -150,6 +150,7 @@ public class TransmissionServerService {
         } catch (ResourceAccessException e) {  // capturamos si transmission no esta disponible
             throw new TransmissionException("9999", "Transmission no está disponible.");
         }
+        return torrent;
     }
 
     private void getResponseHeaders(HttpHeaders headers) throws TransmissionException {
