@@ -20,4 +20,12 @@ public class TorrentMapper {
                 .map(TorrentMapper::map)
                 .toArray(Torrent[]::new);
     }
+
+
+    public static Download map(Torrent source) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.createTypeMap(Torrent.class, Download.class);
+
+        return modelMapper.map(source, Download.class);
+    }
 }

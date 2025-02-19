@@ -6,6 +6,8 @@ import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torre
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.repositories.TorrentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TorrentService {
 
@@ -15,11 +17,16 @@ public class TorrentService {
         this.torrentRepository = torrentRepository;
     }
 
-    public boolean addTorrent(Download download) {
-        Torrent respuesta = torrentRepository.save(TorrentMapper.map(download));
-        if (respuesta != null) {
-            return true;
-        }
-        return false;
+
+
+    public List<Torrent> getAllTorrents() {
+        return torrentRepository.findAll();
+    }
+
+    public Torrent addTorrent(Download download) {
+        return save(TorrentMapper.map(download));
+    }
+    public Torrent save(Torrent torrent) {
+        return torrentRepository.save(torrent);
     }
 }

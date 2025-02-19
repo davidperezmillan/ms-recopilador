@@ -1,8 +1,8 @@
-package com.davidperezmillan.recopilador.infrastructure.web.transmission.mappers;
+package com.davidperezmillan.recopilador.infrastructure.web.download.mappers;
 
 
 import com.davidperezmillan.recopilador.domain.models.Download;
-import com.davidperezmillan.recopilador.infrastructure.web.transmission.dtos.DownloadRequest;
+import com.davidperezmillan.recopilador.infrastructure.web.download.dtos.DownloadRequest;
 import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
