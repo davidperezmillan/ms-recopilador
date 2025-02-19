@@ -12,6 +12,9 @@ public class Transmission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "name", unique = true)
+    private String name;
+
     private String url;
     private String username;
     private String password;

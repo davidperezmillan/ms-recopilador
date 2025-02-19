@@ -19,7 +19,7 @@ public class SchedulerTasks {
     @Scheduled(fixedRate = 60000) // 60000 milliseconds = 1 minute
     public void runTask() {
         try {
-            downloadUseCase.downloadAllTorrent();
+            downloadUseCase.downloadAllTorrent("series");
         } catch (TransmissionException e) {
             log.info("Error downloading torrents: {}",e.getMessage());
         }

@@ -7,5 +7,5 @@ public interface DownloadUseCase {
 
     boolean addDownload(Download download);
 
-    void downloadAllTorrent() throws TransmissionException;
+    void downloadAllTorrent(String nameServer) throws TransmissionException;
 }
