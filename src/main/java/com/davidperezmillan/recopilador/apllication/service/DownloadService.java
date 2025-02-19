@@ -31,13 +31,13 @@ public class DownloadService implements DownloadUseCase {
         return true;
     }
 
-    public void downloadAllTorrent() throws TransmissionException {
+    public void downloadAllTorrent(String nameServer) throws TransmissionException {
         // get all torrents
         List<Torrent> torrents = torrentService.getAllTorrents();
         // Download torrent
         // Add torrent to transmission
         try {
-            transmissionServerService.setTransmission(transmissionService.findbyId(1L));
+            transmissionServerService.setTransmission(transmissionService.findbyName(nameServer));
             for (Torrent torrent : torrents) {
                 torrentService.save(transmissionServerService.addTorrent(torrent));
             }

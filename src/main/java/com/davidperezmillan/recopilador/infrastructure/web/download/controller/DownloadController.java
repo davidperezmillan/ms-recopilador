@@ -31,7 +31,7 @@ public class DownloadController {
     @PostMapping("/transmission")
     public ResponseEntity<ApplicationResponse<String>> downloadTransmission(){
         try {
-            downloadUseCase.downloadAllTorrent();
+            downloadUseCase.downloadAllTorrent("series");
         }catch (TransmissionException e){
             return ResponseEntity.status(409).body(new ApplicationResponse<String>(0, e.getMessage()));
         }

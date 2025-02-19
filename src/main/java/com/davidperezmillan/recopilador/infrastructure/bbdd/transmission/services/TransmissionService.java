@@ -20,6 +20,10 @@ public class TransmissionService {
         return transmissionRepository.findById(id).orElse(null);
     }
 
+    public Transmission findbyName(String name) {
+        return transmissionRepository.findByName(name).orElse(null);
+    }
+
     public List<Transmission> findAll() {
         return transmissionRepository.findAll();
     }
