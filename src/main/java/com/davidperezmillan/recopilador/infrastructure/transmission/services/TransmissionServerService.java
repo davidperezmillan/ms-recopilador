@@ -43,7 +43,7 @@ public class TransmissionServerService {
                 getResponseHeaders(headers);
             }
         } catch (TransmissionException e) {
-            log.warn("Transmission no disponible");
+            //log.warn("Transmission no disponible");
             throw e;
         }
         try {
@@ -99,7 +99,7 @@ public class TransmissionServerService {
                 getResponseHeaders(headers);
             }
         } catch (TransmissionException e) {
-            log.warn("Transmission no disponible");
+            // log.warn("Transmission no disponible");
             throw e;
         }
         try {
@@ -125,7 +125,7 @@ public class TransmissionServerService {
             if (respuesta.getBody().getResult().equals("success")) {
                 TransmissionTorrent transmissionTorrent = new TransmissionTorrent();
                 if (null != respuesta.getBody().getArguments().getTorrentDuplicate()) {
-                    log.warn("Torrent duplicado: {}", respuesta.getBody().getArguments().getTorrentDuplicate());
+                    log.info("Torrent duplicado: {}", respuesta.getBody().getArguments().getTorrentDuplicate());
                     transmissionTorrent = respuesta.getBody().getArguments().getTorrentDuplicate();
                 } else {
                     log.info("Torrent añadido: {}", respuesta.getBody());

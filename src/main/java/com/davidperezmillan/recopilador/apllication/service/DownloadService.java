@@ -30,6 +30,7 @@ public class DownloadService implements DownloadUseCase {
         torrentService.addTorrent(download);
         return true;
     }
+
     public void downloadAllTorrent() throws TransmissionException {
         // get all torrents
         List<Torrent> torrents = torrentService.getAllTorrents();
