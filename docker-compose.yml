@@ -12,5 +12,7 @@ services:
         environment:
             SPRING_PROFILES_ACTIVE: "${SPRING_PROFILE}"  # Usar la variable SPRING_PROFILE del archivo .env
             NEXTCLOUD_PASSWORD: "${NEXTCLOUD_PASSWORD}" # Usar la variable NEXTCLOUD_KEY del archivo .env
+            DB_URL: "${DB_URL}" # Usar la variable DB_URL del archivo .env
+            DB_USERNAME: "${DB_USERNAME}" # Usar la variable DB_USERNAME del archivo .env
             DB_PASSWORD: "${DB_PASSWORD}" # Usar la variable DB_PASSWORD del archivo .env
         restart: always
