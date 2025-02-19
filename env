@@ -3,3 +3,5 @@ IMAGE_NAME=davidperez01/ms-recopilador
 VERSION=latest
 PORT=7000
 SPRING_PROFILE=prod
+
+BBDD_PASS=DB_PASSWORD
