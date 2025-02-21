@@ -2,6 +2,8 @@ package com.davidperezmillan.recopilador.infrastructure.transmission.models;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class TransmissionTorrent {
 
@@ -12,5 +14,6 @@ public class TransmissionTorrent {
     private String name;
     private double percentDone;
     private TransmissionStatus status;
+    private List<String> files;
 
 }

@@ -39,7 +39,8 @@ public class DownloadService implements DownloadUseCase {
         try {
             transmissionServerService.setTransmission(transmissionService.findbyName(nameServer));
             for (Torrent torrent : torrents) {
-                torrentService.save(transmissionServerService.addTorrent(torrent));
+                transmissionServerService.addTorrent(torrent);
+                torrentService.save(torrent);
             }
         } catch (TransmissionException e) {
             throw e;
