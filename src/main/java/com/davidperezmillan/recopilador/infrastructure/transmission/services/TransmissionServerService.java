@@ -83,7 +83,7 @@ public class TransmissionServerService {
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
             if (sessionId == null) {
-                throw new TransmissionException("9999","No se pudo obtener el ID de sesión de Transmission.");
+                throw new TransmissionException("9999", "No se pudo obtener el ID de sesión de Transmission.");
             }
         } catch (ResourceAccessException e) {  // capturamos si transmission no esta disponible
             throw new TransmissionException("9999", "Transmission no está disponible.");
@@ -131,11 +131,16 @@ public class TransmissionServerService {
                     log.info("Torrent añadido: {}", respuesta.getBody());
                     transmissionTorrent = respuesta.getBody().getArguments().getTorrentAdded();
                 }
+
+
+                // prepare torrrent to save
                 torrent.setStatus(StatusTorrent.DOWNLOADING);
+                torrent.setTitle(transmissionTorrent.getName());
                 torrent.setIdTransmission(transmissionTorrent.getId());
                 torrent.setHashString(transmissionTorrent.getHashString());
                 torrent.setPercentDone(transmissionTorrent.getPercentDone());
-                return torrent;
+
+                return transmissionTorrent;
             }
             log.warn("Error al añadir el torrent: {}", respuesta.getBody().getResult());
             torrent.setStatus(StatusTorrent.PENDING);
@@ -145,12 +150,12 @@ public class TransmissionServerService {
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
             if (sessionId == null) {
-                throw new TransmissionException("0001","No se pudo obtener el ID de sesión de Transmission.");
+                throw new TransmissionException("0001", "No se pudo obtener el ID de sesión de Transmission.");
             }
         } catch (ResourceAccessException e) {  // capturamos si transmission no esta disponible
             throw new TransmissionException("9999", "Transmission no está disponible.");
         }
-        return torrent;
+        return null;
     }
 
     private void getResponseHeaders(HttpHeaders headers) throws TransmissionException {
@@ -181,7 +186,4 @@ public class TransmissionServerService {
         headers.set("Authorization", authHeader);
         return headers;
     }
-
-
-
 }
