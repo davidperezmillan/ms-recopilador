@@ -13,6 +13,6 @@ spring:
 
 logging:
   level:
-    root: ALL
+    root: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1}:%M:%L - %msg%n"
