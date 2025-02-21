@@ -92,7 +92,7 @@ public class TransmissionServerService {
     }
 
 
-    public Torrent addTorrent(Torrent torrent) throws TransmissionException {
+    public TransmissionTorrent addTorrent(Torrent torrent) throws TransmissionException {
         try {
             if (sessionId == null) {
                 HttpHeaders headers = createHeaders();
