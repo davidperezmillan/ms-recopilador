@@ -116,6 +116,9 @@ public class TransmissionServerService {
             request.setMethod("torrent-add");
             ArgumentsRequest arguments = new ArgumentsRequest();
             arguments.setFilename(torrent.getUrl());
+            if (torrent.getDownloadPath() != null) {
+                arguments.setDownloadDir(torrent.getDownloadPath());
+            }
             request.setArguments(arguments);
 
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);

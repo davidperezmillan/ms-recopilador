@@ -21,6 +21,9 @@ public class Torrent {
     @Column(length = 1024) // Increase the size limit
     private String url;
 
+    @Column(name = "download_path")
+    private String downloadPath;
+
     private StatusTorrent status;
 
     private String hashString;

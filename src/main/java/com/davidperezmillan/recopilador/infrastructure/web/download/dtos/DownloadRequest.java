@@ -6,4 +6,5 @@ import lombok.Data;
 public class DownloadRequest {
 
     private String url;
+    private String downloadPath;
 }
