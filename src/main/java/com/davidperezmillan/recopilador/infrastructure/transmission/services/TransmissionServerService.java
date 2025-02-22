@@ -1,14 +1,12 @@
 package com.davidperezmillan.recopilador.infrastructure.transmission.services;
 
-
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.StatusTorrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.models.Transmission;
-import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
-import com.davidperezmillan.recopilador.infrastructure.transmission.models.Arguments;
-import com.davidperezmillan.recopilador.infrastructure.transmission.models.TransmissionRequest;
-import com.davidperezmillan.recopilador.infrastructure.transmission.models.TransmissionResponse;
-import com.davidperezmillan.recopilador.infrastructure.transmission.models.TransmissionTorrent;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.request.ArgumentsRequest;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.request.TransmissionRequest;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionResponse;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpEntity;
@@ -35,91 +33,92 @@ public class TransmissionServerService {
 
     private String sessionId;
 
-
-    public List<TransmissionTorrent> listTorrent() throws TransmissionException {
-        try {
-            if (sessionId == null) {
-                HttpHeaders headers = createHeaders();
-                getResponseHeaders(headers);
-            }
-        } catch (TransmissionException e) {
-            //log.warn("Transmission no disponible");
-            throw e;
+    public List<TransmissionTorrent> listTorrent() {
+        if (sessionId == null) {
+            HttpHeaders headers = createHeaders();
+            getResponseHeaders(headers);
         }
         try {
             log.info("Session ID: {}", sessionId);
-            // Crear la solicitud para añadir el enlace magnet
             HttpHeaders headers = createHeaders();
-
             headers.set("X-Transmission-Session-Id", sessionId);
-
             headers.set("Content-Type", "application/json");
 
-            //String jsonPayload = "{\"method\": \"torrent-get\", \"arguments\": {\"fields\": [\"id\", \"name\", \"status\", \"percentDone\"]}}";
             TransmissionRequest request = new TransmissionRequest();
             request.setMethod("torrent-get");
-            Arguments arguments = new Arguments();
-            arguments.setFields(new String[]{"id", "name", "status", "percentDone", "hashString"});
+            ArgumentsRequest arguments = new ArgumentsRequest();
+            arguments.setFields(new String[]{"id", "name", "status", "percentDone", "hashString", "files"});
             request.setArguments(arguments);
 
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);
-
-        /*
-        ResponseEntity<String> respuesta = restTemplate.exchange(transmissionUrl, HttpMethod.POST, requestEntity, String.class);
-        log.info("Respuesta: {}", respuesta.getBody());
-        */
-
-            // Enviar la solicitud POST para añadir el torrent
-
             ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
 
             if (null != respuesta.getBody().getArguments().getTorrents()) {
                 return List.of(respuesta.getBody().getArguments().getTorrents());
             }
-
-
         } catch (HttpClientErrorException.Conflict e) {
-            // Capturar el error 409 y obtener el nuevo ID de sesión
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
-            if (sessionId == null) {
-                throw new TransmissionException("9999", "No se pudo obtener el ID de sesión de Transmission.");
+            if (sessionId != null) {
+                return listTorrent();
             }
-        } catch (ResourceAccessException e) {  // capturamos si transmission no esta disponible
-            throw new TransmissionException("9999", "Transmission no está disponible.");
+        } catch (ResourceAccessException e) {
+            log.error("Transmission no está disponible.", e);
         }
         return List.of();
     }
 
-
-    public TransmissionTorrent addTorrent(Torrent torrent) throws TransmissionException {
-        try {
-            if (sessionId == null) {
-                HttpHeaders headers = createHeaders();
-                getResponseHeaders(headers);
-            }
-        } catch (TransmissionException e) {
-            // log.warn("Transmission no disponible");
-            throw e;
+    public TransmissionTorrent getTorrentByHashString(String hashString) {
+        if (sessionId == null) {
+            HttpHeaders headers = createHeaders();
+            getResponseHeaders(headers);
         }
         try {
-            // Crear la solicitud para añadir el enlace magnet
+            log.info("Session ID: {}", sessionId);
             HttpHeaders headers = createHeaders();
-
             headers.set("X-Transmission-Session-Id", sessionId);
+            headers.set("Content-Type", "application/json");
 
+            TransmissionRequest request = new TransmissionRequest();
+            request.setMethod("torrent-get");
+            ArgumentsRequest arguments = new ArgumentsRequest();
+            arguments.setFields(new String[]{"id", "name", "status", "percentDone", "hashString", "files"});
+            arguments.setIds(new String[]{hashString});
+            request.setArguments(arguments);
+
+            HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);
+            ResponseEntity<TransmissionResponse> response = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
+
+            return response.getBody().getArguments().getTorrents()[0];
+        } catch (HttpClientErrorException.Conflict e) {
+            sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
+            log.info("Session ID by Error: {}", sessionId);
+            if (sessionId != null) {
+                return getTorrentByHashString(hashString);
+            }
+        } catch (ResourceAccessException e) {
+            log.error("Transmission no está disponible.", e);
+        }
+        return null;
+    }
+
+    public TransmissionTorrent addTorrent(Torrent torrent) {
+        if (sessionId == null) {
+            HttpHeaders headers = createHeaders();
+            getResponseHeaders(headers);
+        }
+        try {
+            HttpHeaders headers = createHeaders();
+            headers.set("X-Transmission-Session-Id", sessionId);
             headers.set("Content-Type", "application/json");
 
             TransmissionRequest request = new TransmissionRequest();
             request.setMethod("torrent-add");
-
-            Arguments arguments = new Arguments();
+            ArgumentsRequest arguments = new ArgumentsRequest();
             arguments.setFilename(torrent.getUrl());
             request.setArguments(arguments);
 
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);
-
-            // Enviar la solicitud POST para añadir el torrent
             ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
 
             if (respuesta.getBody().getResult().equals("success")) {
@@ -132,8 +131,6 @@ public class TransmissionServerService {
                     transmissionTorrent = respuesta.getBody().getArguments().getTorrentAdded();
                 }
 
-
-                // prepare torrrent to save
                 torrent.setStatus(StatusTorrent.DOWNLOADING);
                 torrent.setTitle(transmissionTorrent.getName());
                 torrent.setIdTransmission(transmissionTorrent.getId());
@@ -144,39 +141,30 @@ public class TransmissionServerService {
             }
             log.warn("Error al añadir el torrent: {}", respuesta.getBody().getResult());
             torrent.setStatus(StatusTorrent.PENDING);
-
         } catch (HttpClientErrorException.Conflict e) {
-            // Capturar el error 409 y obtener el nuevo ID de sesión
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
-            if (sessionId == null) {
-                throw new TransmissionException("0001", "No se pudo obtener el ID de sesión de Transmission.");
+            if (sessionId != null) {
+                return addTorrent(torrent);
             }
-        } catch (ResourceAccessException e) {  // capturamos si transmission no esta disponible
-            throw new TransmissionException("9999", "Transmission no está disponible.");
+        } catch (ResourceAccessException e) {
+            log.error("Transmission no está disponible.", e);
         }
         return null;
     }
 
-    private void getResponseHeaders(HttpHeaders headers) throws TransmissionException {
+    private void getResponseHeaders(HttpHeaders headers) {
         try {
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(new TransmissionRequest(), headers);
             ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
             sessionId = respuesta.getHeaders().getFirst("X-Transmission-Session-Id");
         } catch (HttpClientErrorException.Conflict e) {
-            // Capturar el error 409 y obtener el nuevo ID de sesión
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
-            if (sessionId == null) {
-                throw new TransmissionException("0001", "No se pudo obtener el ID de sesión de Transmission.");
-            }
-        } catch (ResourceAccessException e) {  // capturamos si transmission no esta disponible
-            throw new TransmissionException("9999", "Transmission no está disponible.");
+        } catch (ResourceAccessException e) {
+            log.error("Transmission no está disponible.", e);
         }
-
-
     }
-
 
     private HttpHeaders createHeaders() {
         String auth = transmission.getUsername() + ":" + transmission.getPassword();
