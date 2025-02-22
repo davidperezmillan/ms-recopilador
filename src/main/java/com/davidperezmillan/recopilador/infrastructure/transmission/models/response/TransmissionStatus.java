@@ -1,4 +1,4 @@
-package com.davidperezmillan.recopilador.infrastructure.transmission.models;
+package com.davidperezmillan.recopilador.infrastructure.transmission.models.response;
 
 public enum TransmissionStatus {
     PAUSED,

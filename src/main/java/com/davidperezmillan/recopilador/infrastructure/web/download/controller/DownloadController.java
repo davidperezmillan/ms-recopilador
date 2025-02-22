@@ -2,12 +2,14 @@ package com.davidperezmillan.recopilador.infrastructure.web.download.controller;
 
 import com.davidperezmillan.recopilador.apllication.usecases.DownloadUseCase;
 import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.web.ApplicationResponse;
 import com.davidperezmillan.recopilador.infrastructure.web.download.dtos.DownloadRequest;
 import com.davidperezmillan.recopilador.infrastructure.web.download.mappers.DownloadRequestMapping;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/download")
@@ -36,5 +38,19 @@ public class DownloadController {
             return ResponseEntity.status(409).body(new ApplicationResponse<String>(0, e.getMessage()));
         }
         return ResponseEntity.ok(new ApplicationResponse<String>(0, "Transmission lancher"));
+    }
+
+    @GetMapping("/torrent")
+    public ResponseEntity<ApplicationResponse<List<TransmissionTorrent>>> getAllTransmission(){
+        List<TransmissionTorrent> listTransmission = downloadUseCase.getAllTransmission();
+        return ResponseEntity.ok(new ApplicationResponse<List<TransmissionTorrent>>(listTransmission.size(),  listTransmission));
+
+    }
+
+    @GetMapping("/torrent/{hashString}")
+    public ResponseEntity<ApplicationResponse<TransmissionTorrent>> getTransmission(@PathVariable String hashString){
+        TransmissionTorrent transmission = downloadUseCase.getTransmission(hashString);
+        return ResponseEntity.ok(new ApplicationResponse<TransmissionTorrent>(1,  transmission));
+
     }
 }

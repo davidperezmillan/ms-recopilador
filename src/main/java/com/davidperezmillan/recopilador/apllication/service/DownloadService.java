@@ -2,11 +2,11 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.DownloadUseCase;
 import com.davidperezmillan.recopilador.domain.models.Download;
-import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.mappers.TorrentMapper;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.services.TorrentService;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.services.TransmissionService;
 import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.transmission.services.TransmissionServerService;
 import org.springframework.stereotype.Service;
 
@@ -36,16 +36,24 @@ public class DownloadService implements DownloadUseCase {
         List<Torrent> torrents = torrentService.getAllTorrents();
         // Download torrent
         // Add torrent to transmission
-        try {
-            transmissionServerService.setTransmission(transmissionService.findbyName(nameServer));
-            for (Torrent torrent : torrents) {
-                transmissionServerService.addTorrent(torrent);
-                torrentService.save(torrent);
-            }
-        } catch (TransmissionException e) {
-            throw e;
+        transmissionServerService.setTransmission(transmissionService.findbyName(nameServer));
+        for (Torrent torrent : torrents) {
+            transmissionServerService.addTorrent(torrent);
+            torrentService.save(torrent);
         }
 
 
+    }
+
+    @Override
+    public List<TransmissionTorrent> getAllTransmission() {
+        List<TransmissionTorrent> resp = transmissionServerService.listTorrent();
+        return resp;
+
+    }
+
+    @Override
+    public TransmissionTorrent getTransmission(String hashString) {
+        return transmissionServerService.getTorrentByHashString(hashString);
     }
 }
