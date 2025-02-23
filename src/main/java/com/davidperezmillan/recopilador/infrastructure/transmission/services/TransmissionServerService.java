@@ -1,13 +1,14 @@
 package com.davidperezmillan.recopilador.infrastructure.transmission.services;
 
+
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.StatusTorrent;
-import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
-import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.models.Transmission;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.TransmissionServerRequest;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.TransmissionServiceRequest;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.TransmissionServiceRespone;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.request.ArgumentsRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.request.TransmissionRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionResponse;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,19 +29,16 @@ public class TransmissionServerService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Setter
-    private Transmission transmission;
-
     private String sessionId;
 
-    public List<TransmissionTorrent> listTorrent() {
+    public List<TransmissionServiceRespone> listTorrent(TransmissionServiceRequest transmissionServiceRequest) {
         if (sessionId == null) {
-            HttpHeaders headers = createHeaders();
-            getResponseHeaders(headers);
+            HttpHeaders headers = createHeaders(transmissionServiceRequest.getTransmissionServerRequest());
+            getResponseHeaders(transmissionServiceRequest.getTransmissionServerRequest(), headers);
         }
         try {
             log.info("Session ID: {}", sessionId);
-            HttpHeaders headers = createHeaders();
+            HttpHeaders headers = createHeaders(transmissionServiceRequest.getTransmissionServerRequest());
             headers.set("X-Transmission-Session-Id", sessionId);
             headers.set("Content-Type", "application/json");
 
@@ -51,7 +49,7 @@ public class TransmissionServerService {
             request.setArguments(arguments);
 
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);
-            ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
+            ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmissionServiceRequest.getTransmissionServerRequest().getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
 
             if (null != respuesta.getBody().getArguments().getTorrents()) {
                 return List.of(respuesta.getBody().getArguments().getTorrents());
@@ -60,7 +58,7 @@ public class TransmissionServerService {
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
             if (sessionId != null) {
-                return listTorrent();
+                return listTorrent(transmissionServiceRequest);
             }
         } catch (ResourceAccessException e) {
             log.error("Transmission no está disponible.", e);
@@ -68,14 +66,14 @@ public class TransmissionServerService {
         return List.of();
     }
 
-    public TransmissionTorrent getTorrentByHashString(String hashString) {
+    public TransmissionServiceRespone getTorrentByHashString(TransmissionServiceRequest transmissionServiceRequest) {
         if (sessionId == null) {
-            HttpHeaders headers = createHeaders();
-            getResponseHeaders(headers);
+            HttpHeaders headers = createHeaders(transmissionServiceRequest.getTransmissionServerRequest());
+            getResponseHeaders(transmissionServiceRequest.getTransmissionServerRequest(), headers);
         }
         try {
             log.info("Session ID: {}", sessionId);
-            HttpHeaders headers = createHeaders();
+            HttpHeaders headers = createHeaders(transmissionServiceRequest.getTransmissionServerRequest());
             headers.set("X-Transmission-Session-Id", sessionId);
             headers.set("Content-Type", "application/json");
 
@@ -83,18 +81,19 @@ public class TransmissionServerService {
             request.setMethod("torrent-get");
             ArgumentsRequest arguments = new ArgumentsRequest();
             arguments.setFields(new String[]{"id", "name", "status", "percentDone", "hashString", "files"});
-            arguments.setIds(new String[]{hashString});
+            arguments.setIds(new String[]{transmissionServiceRequest.getHashString()});
             request.setArguments(arguments);
 
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);
-            ResponseEntity<TransmissionResponse> response = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
+            ResponseEntity<TransmissionResponse> response = restTemplate.exchange(
+                    transmissionServiceRequest.getTransmissionServerRequest().getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
 
             return response.getBody().getArguments().getTorrents()[0];
         } catch (HttpClientErrorException.Conflict e) {
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
             if (sessionId != null) {
-                return getTorrentByHashString(hashString);
+                return getTorrentByHashString(transmissionServiceRequest);
             }
         } catch (ResourceAccessException e) {
             log.error("Transmission no está disponible.", e);
@@ -102,27 +101,27 @@ public class TransmissionServerService {
         return null;
     }
 
-    public TransmissionTorrent addTorrent(Torrent torrent) {
+    public TransmissionServiceRespone addTorrent(TransmissionServiceRequest transmissionServiceRequest) {
         if (sessionId == null) {
-            HttpHeaders headers = createHeaders();
-            getResponseHeaders(headers);
+            HttpHeaders headers = createHeaders(transmissionServiceRequest.getTransmissionServerRequest());
+            getResponseHeaders(transmissionServiceRequest.getTransmissionServerRequest(), headers);
         }
         try {
-            HttpHeaders headers = createHeaders();
+            HttpHeaders headers = createHeaders(transmissionServiceRequest.getTransmissionServerRequest());
             headers.set("X-Transmission-Session-Id", sessionId);
             headers.set("Content-Type", "application/json");
 
             TransmissionRequest request = new TransmissionRequest();
             request.setMethod("torrent-add");
             ArgumentsRequest arguments = new ArgumentsRequest();
-            arguments.setFilename(torrent.getUrl());
-            if (torrent.getDownloadPath() != null) {
-                arguments.setDownloadDir(torrent.getDownloadPath());
+            arguments.setFilename(transmissionServiceRequest.getUrl());
+            if (transmissionServiceRequest.getDownloadPath() != null) {
+                arguments.setDownloadDir(transmissionServiceRequest.getDownloadPath());
             }
             request.setArguments(arguments);
 
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(request, headers);
-            ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
+            ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmissionServiceRequest.getTransmissionServerRequest().getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
 
             if (respuesta.getBody().getResult().equals("success")) {
                 TransmissionTorrent transmissionTorrent = new TransmissionTorrent();
@@ -133,13 +132,6 @@ public class TransmissionServerService {
                     log.info("Torrent añadido: {}", respuesta.getBody());
                     transmissionTorrent = respuesta.getBody().getArguments().getTorrentAdded();
                 }
-
-                torrent.setStatus(StatusTorrent.DOWNLOADING);
-                torrent.setTitle(transmissionTorrent.getName());
-                torrent.setIdTransmission(transmissionTorrent.getId());
-                torrent.setHashString(transmissionTorrent.getHashString());
-                torrent.setPercentDone(transmissionTorrent.getPercentDone());
-
                 return transmissionTorrent;
             }
             log.warn("Error al añadir el torrent: {}", respuesta.getBody().getResult());
@@ -148,7 +140,7 @@ public class TransmissionServerService {
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID by Error: {}", sessionId);
             if (sessionId != null) {
-                return addTorrent(torrent);
+                return addTorrent(transmissionServiceRequest);
             }
         } catch (ResourceAccessException e) {
             log.error("Transmission no está disponible.", e);
@@ -156,10 +148,10 @@ public class TransmissionServerService {
         return null;
     }
 
-    private void getResponseHeaders(HttpHeaders headers) {
+    private void getResponseHeaders(TransmissionServerRequest server, HttpHeaders headers) {
         try {
             HttpEntity<TransmissionRequest> requestEntity = new HttpEntity<>(new TransmissionRequest(), headers);
-            ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(transmission.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
+            ResponseEntity<TransmissionResponse> respuesta = restTemplate.exchange(server.getUrl(), HttpMethod.POST, requestEntity, TransmissionResponse.class);
             sessionId = respuesta.getHeaders().getFirst("X-Transmission-Session-Id");
         } catch (HttpClientErrorException.Conflict e) {
             sessionId = e.getResponseHeaders().getFirst("X-Transmission-Session-Id");
@@ -169,8 +161,8 @@ public class TransmissionServerService {
         }
     }
 
-    private HttpHeaders createHeaders() {
-        String auth = transmission.getUsername() + ":" + transmission.getPassword();
+    private HttpHeaders createHeaders(TransmissionServerRequest transmissionServerRequest) {
+        String auth = transmissionServerRequest.getUsername() + ":" + transmissionServerRequest.getPassword();
         byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
         HttpHeaders headers = new HttpHeaders();

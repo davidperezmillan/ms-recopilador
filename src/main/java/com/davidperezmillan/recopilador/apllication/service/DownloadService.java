@@ -2,8 +2,10 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.DownloadUseCase;
 import com.davidperezmillan.recopilador.domain.models.Download;
+import com.davidperezmillan.recopilador.domain.models.Server;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.services.TorrentService;
+import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.TransmissionMapper;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.services.TransmissionService;
 import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
@@ -36,9 +38,9 @@ public class DownloadService implements DownloadUseCase {
         List<Torrent> torrents = torrentService.getAllTorrents();
         // Download torrent
         // Add torrent to transmission
-        transmissionServerService.setTransmission(transmissionService.findbyName(nameServer));
+        Server server = TransmissionMapper.map(transmissionService.findbyName(nameServer));
         for (Torrent torrent : torrents) {
-            transmissionServerService.addTorrent(torrent);
+            transmissionServerService.addTorrent(server, torrent);
             torrentService.save(torrent);
         }
 
@@ -54,6 +56,7 @@ public class DownloadService implements DownloadUseCase {
 
     @Override
     public TransmissionTorrent getTransmission(String hashString) {
-        return transmissionServerService.getTorrentByHashString(hashString);
+        Server server = TransmissionMapper.map(transmissionService.findbyName(nameServer));
+        return transmissionServerService.getTorrentByHashString(server, hashString);
     }
 }
