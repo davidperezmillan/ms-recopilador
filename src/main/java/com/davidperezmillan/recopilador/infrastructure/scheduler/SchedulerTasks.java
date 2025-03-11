@@ -1,6 +1,5 @@
 package com.davidperezmillan.recopilador.infrastructure.scheduler;
 
-import com.davidperezmillan.recopilador.apllication.usecases.DownloadUseCase;
 import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class SchedulerTasks {
 
+    /*
     private final DownloadUseCase downloadUseCase;
 
     public SchedulerTasks(DownloadUseCase downloadUseCase) {
@@ -25,4 +25,6 @@ public class SchedulerTasks {
         }
 
     }
+
+     */
 }

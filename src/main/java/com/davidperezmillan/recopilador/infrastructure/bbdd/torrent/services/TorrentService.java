@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.net.URLDecoder;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -25,7 +26,7 @@ public class TorrentService {
         return torrentRepository.findAll();
     }
 
-    public Torrent addTorrent(Download download) {
+    public Torrent addTorrent(Download download) throws SQLIntegrityConstraintViolationException {
         return save(sanitizeTorrent(TorrentMapper.map(download)));
     }
 

@@ -15,5 +15,7 @@ public class TransmissionTorrent {
     private double percentDone;
     private TransmissionStatus status;
     private List<File> files;
+    private String downloadDir;
+
 
 }

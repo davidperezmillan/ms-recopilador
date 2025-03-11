@@ -13,10 +13,14 @@ public class ArgumentsRequest {
     // "{\"method\": \"torrent-get\", \"arguments\": {\"fields\": [\"id\", \"name\", \"status\", \"percentDone\"]}}";
     private String[] fields;
 
+    private boolean speedLimitDownEnabled;
+    private boolean speedLimitUpEnabled;
+
     // si el campo no esta o es nulo, no se pinta en el json
     private String[] ids;
 
     @JsonProperty("download-dir") // Add this annotation
     private String downloadDir; // Add this field
+
 
 }

@@ -1,6 +1,6 @@
 package com.davidperezmillan.recopilador.infrastructure.web.download.controller;
 
-import com.davidperezmillan.recopilador.apllication.usecases.DownloadUseCase;
+import com.davidperezmillan.recopilador.apllication.usecases.TorrentUseCase;
 import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.web.ApplicationResponse;
@@ -12,45 +12,46 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/download")
+@RequestMapping("/torrent")
 public class DownloadController {
 
-    private final DownloadUseCase downloadUseCase;
+    private final TorrentUseCase torrentUseCase;
 
-    public DownloadController(DownloadUseCase downloadUseCase) {
-        this.downloadUseCase = downloadUseCase;
+    public DownloadController(TorrentUseCase torrentUseCase) {
+        this.torrentUseCase = torrentUseCase;
     }
 
-    @PostMapping("/torrent")
-    public ResponseEntity<ApplicationResponse<String>> addTransmission(@RequestBody DownloadRequest downloadRequest) {
-        boolean add = downloadUseCase.addDownload(DownloadRequestMapping.map(downloadRequest));
+    /**
+     * add torrents to transmision
+     * @return
+     */
+    @PostMapping("/save")
+    public ResponseEntity<ApplicationResponse<String>> saveTorrent(@RequestBody DownloadRequest downloadRequest) {
+        boolean add = torrentUseCase.saveTorrent(DownloadRequestMapping.map(downloadRequest));
         if (!add) {
-            return ResponseEntity.ok(new ApplicationResponse<String>(0, "Transmission not added"));
+            return ResponseEntity.ok(new ApplicationResponse<String>(0, "torrent not added"));
         }
-        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Transmission added"));
+        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Torrents added"));
     }
 
-    @PostMapping("/transmission")
-    public ResponseEntity<ApplicationResponse<String>> downloadTransmission(){
-        try {
-            downloadUseCase.downloadAllTorrent("series");
-        }catch (TransmissionException e){
-            return ResponseEntity.status(409).body(new ApplicationResponse<String>(0, e.getMessage()));
-        }
-        return ResponseEntity.ok(new ApplicationResponse<String>(0, "Transmission lancher"));
+    /**
+     * add torrents to bbdd
+     * @return
+     */
+    @PostMapping("/add")
+    public ResponseEntity<ApplicationResponse<String>> addTorrents() {
+        torrentUseCase.addTorrents();
+        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Transmission Torrents lauched"));
     }
 
-    @GetMapping("/torrent")
-    public ResponseEntity<ApplicationResponse<List<TransmissionTorrent>>> getAllTransmission(){
-        List<TransmissionTorrent> listTransmission = downloadUseCase.getAllTransmission();
-        return ResponseEntity.ok(new ApplicationResponse<List<TransmissionTorrent>>(listTransmission.size(),  listTransmission));
-
+    /**
+     * Get all torrents form server
+     * @return list of torrents
+     */
+    @GetMapping("/dir/{server}")
+    public ResponseEntity<ApplicationResponse<List<String>>> getDownloadDir(@PathVariable("server") String server) throws TransmissionException {
+        List<String> downloadDir = torrentUseCase.getDownloadDir(server);
+        return ResponseEntity.ok(new ApplicationResponse<List<String>>(downloadDir.size(), downloadDir));
     }
 
-    @GetMapping("/torrent/{hashString}")
-    public ResponseEntity<ApplicationResponse<TransmissionTorrent>> getTransmission(@PathVariable String hashString){
-        TransmissionTorrent transmission = downloadUseCase.getTransmission(hashString);
-        return ResponseEntity.ok(new ApplicationResponse<TransmissionTorrent>(1,  transmission));
-
-    }
 }

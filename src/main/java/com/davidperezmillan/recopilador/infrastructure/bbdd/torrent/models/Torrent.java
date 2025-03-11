@@ -1,6 +1,7 @@
 package com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models;
 
 
+import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.models.Transmission;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,7 +19,7 @@ public class Torrent {
 
     private String title;
 
-    @Column(length = 1024) // Increase the size limit
+    @Column(length = 1024, unique = true) // Increase the size limit
     private String url;
 
     @Column(name = "download_path")
@@ -29,6 +30,11 @@ public class Torrent {
     private String hashString;
 
     private double percentDone;
+
+
+    @ManyToOne
+    @JoinColumn(name = "server_id")
+    private Transmission transmission;
 
 
 
