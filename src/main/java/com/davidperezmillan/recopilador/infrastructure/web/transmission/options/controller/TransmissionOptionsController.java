@@ -4,10 +4,7 @@ import com.davidperezmillan.recopilador.apllication.usecases.TorrentUseCase;
 import com.davidperezmillan.recopilador.infrastructure.transmission.exceptions.TransmissionException;
 import com.davidperezmillan.recopilador.infrastructure.web.ApplicationResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +18,20 @@ public class TransmissionOptionsController {
         this.torrentUseCase = torrentUseCase;
     }
 
+
+    /**
+     * get alt speed
+     * @param server
+     * @return
+     * @throws TransmissionException
+     */
+    @GetMapping("/altspeed/{server}")
+    public ResponseEntity<ApplicationResponse<String>> getAltSpeed(
+            @PathVariable("server") String server) throws TransmissionException {
+        String altSpeedValue = torrentUseCase.getAltSpeed(server);
+        return  ResponseEntity.ok(new ApplicationResponse<String>(1, altSpeedValue));
+    }
+
     /**
      * toggle alt speed
      * @param server
@@ -28,7 +39,7 @@ public class TransmissionOptionsController {
      * @return
      * @throws TransmissionException
      */
-    @GetMapping("/altspeed/{server}/{altSpeed}")
+    @PostMapping("/altspeed/{server}/{altSpeed}")
     public ResponseEntity<ApplicationResponse<String>> toogleAltSpeed(
             @PathVariable("server") String server,
             @PathVariable("altSpeed") boolean altSpeed) throws TransmissionException {

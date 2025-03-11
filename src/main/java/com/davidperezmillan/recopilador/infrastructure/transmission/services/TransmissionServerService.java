@@ -26,8 +26,6 @@ public class TransmissionServerService {
     private String sessionId;
 
 
-
-
     public TransmissionTorrent addTorrent(AddTransmissionRequest addTransmissionRequest) {
         if (sessionId == null) {
             getSessionId(addTransmissionRequest.getServer());
@@ -78,7 +76,7 @@ public class TransmissionServerService {
         return null;
     }
 
-    public List<String> getListDownloadDir(AllTorrentRequest allTorrentRequest){
+    public List<String> getListDownloadDir(AllTorrentRequest allTorrentRequest) {
         List<TransmissionTorrent> allTorrents = getAllTorrents(allTorrentRequest);
         return allTorrents.stream().map(TransmissionTorrent::getDownloadDir).distinct().toList();
     }
@@ -164,6 +162,49 @@ public class TransmissionServerService {
     }
 
 
+    public String getAltSpeedEnabled(ServerTransmission serverTransmission) {
+        if (sessionId == null) {
+            getSessionId(serverTransmission);
+        }
+        try {
+            HttpHeaders headers = createHeaders(serverTransmission);
+            headers.set("X-Transmission-Session-Id", sessionId);
+
+            TransmissionRequest request = new TransmissionRequest();
+            request.setMethod("session-get");
+
+            ArgumentsRequest arguments = new ArgumentsRequest();
+            arguments.setFields(new String[]{"alt-speed-enabled"});
+            request.setArguments(arguments);
+
+            TransmissionResponse response = webClient.post()
+                    .uri(serverTransmission.getUrl())
+                    .headers(httpHeaders -> httpHeaders.addAll(headers))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .retrieve()
+                    .bodyToMono(TransmissionResponse.class)
+                    .block();
+
+            if (response != null && response.getArguments() != null) {
+                log.info("respuesta: {}", response.getArguments().getAltSpeedEnabled());
+                return response.getArguments().getAltSpeedEnabled();
+            } else {
+                log.warn("No se pudo recuperar la configuración de los límites de velocidad.");
+            }
+        } catch (WebClientResponseException.Conflict e) {
+            sessionId = e.getHeaders().getFirst("X-Transmission-Session-Id");
+            log.info("Session ID actualizado por error: {}", sessionId);
+            if (sessionId != null) {
+                return getAltSpeedEnabled(serverTransmission);
+            }
+        } catch (Exception e) {
+            log.error("Transmission no está disponible.", e);
+        }
+        return "";// Si falla, devuelve valores nulos.
+
+
+    }
 
 
     private void getSessionId(ServerTransmission serverTransmission) {
@@ -185,8 +226,6 @@ public class TransmissionServerService {
     }
 
 
-
-
     private HttpHeaders createHeaders(ServerTransmission serverTransmission) {
         String auth = serverTransmission.getUsername() + ":" + serverTransmission.getPassword();
         byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
@@ -195,4 +234,5 @@ public class TransmissionServerService {
         headers.set("Authorization", authHeader);
         return headers;
     }
+
 }
