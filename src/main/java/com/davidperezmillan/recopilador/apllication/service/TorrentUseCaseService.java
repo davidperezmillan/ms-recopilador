@@ -16,7 +16,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -109,7 +108,7 @@ public class TorrentUseCaseService implements TorrentUseCase {
         serverTransmission.setUrl(transmission.getUrl());
         serverTransmission.setUsername(transmission.getUsername());
         serverTransmission.setPassword(transmission.getPassword());
-        transmissionServerService.setGlobalSpeedLimits(serverTransmission, altSpeed);
+        transmissionServerService.setAltSpeedEnabled(serverTransmission, altSpeed);
 
     }
 }

@@ -13,8 +13,14 @@ public class ArgumentsRequest {
     // "{\"method\": \"torrent-get\", \"arguments\": {\"fields\": [\"id\", \"name\", \"status\", \"percentDone\"]}}";
     private String[] fields;
 
+    @JsonProperty("speed-limit-down-enabled")
     private boolean speedLimitDownEnabled;
+
+    @JsonProperty("speed-limit-up-enabled")
     private boolean speedLimitUpEnabled;
+
+    @JsonProperty("alt-speed-enabled")
+    private boolean altSpeedEnabled;
 
     // si el campo no esta o es nulo, no se pinta en el json
     private String[] ids;

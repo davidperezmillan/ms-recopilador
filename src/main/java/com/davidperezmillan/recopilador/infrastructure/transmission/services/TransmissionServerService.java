@@ -119,7 +119,7 @@ public class TransmissionServerService {
         return List.of();
     }
 
-    public TransmissionResponse setGlobalSpeedLimits(ServerTransmission server, boolean active) {
+    public TransmissionResponse setAltSpeedEnabled(ServerTransmission server, boolean active) {
         if (sessionId == null) {
             getSessionId(server);
         }
@@ -132,8 +132,7 @@ public class TransmissionServerService {
 
             ArgumentsRequest arguments = new ArgumentsRequest();
             // Asumiendo que tienes estos setters en ArgumentsRequest.
-            arguments.setSpeedLimitDownEnabled(active);
-            arguments.setSpeedLimitUpEnabled(active);
+            arguments.setAltSpeedEnabled(active);
             request.setArguments(arguments);
 
             TransmissionResponse response = webClient.post()
@@ -156,7 +155,7 @@ public class TransmissionServerService {
             sessionId = e.getHeaders().getFirst("X-Transmission-Session-Id");
             log.info("Session ID actualizado por error: {}", sessionId);
             if (sessionId != null) {
-                return setGlobalSpeedLimits(server, active);
+                return setAltSpeedEnabled(server, active);
             }
         } catch (Exception e) {
             log.error("Transmission no está disponible.", e);
