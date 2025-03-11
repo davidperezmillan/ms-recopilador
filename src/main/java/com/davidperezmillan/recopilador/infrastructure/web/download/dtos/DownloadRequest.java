@@ -7,4 +7,5 @@ public class DownloadRequest {
 
     private String url;
     private String downloadPath;
+    private String serverName;
 }
