@@ -45,7 +45,7 @@ public class DownloadController {
     }
 
     /**
-     * Get all torrents form server
+     * Get all download dir from server
      * @return list of torrents
      */
     @GetMapping("/dir/{server}")
