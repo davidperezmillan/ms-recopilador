@@ -17,4 +17,7 @@ public class Arguments {
     @JsonProperty("torrents")
     private TransmissionTorrent[] torrents;
 
+    @JsonProperty("alt-speed-enabled")
+    private String altSpeedEnabled;
+
 }

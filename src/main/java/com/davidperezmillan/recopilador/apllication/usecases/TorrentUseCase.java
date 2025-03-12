@@ -14,4 +14,6 @@ public interface TorrentUseCase {
     List<String> getDownloadDir(String server);
 
     void toggleAltSpeed(String server, boolean altSpeed);
+
+    String getAltSpeed(String server);
 }

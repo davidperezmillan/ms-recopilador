@@ -19,7 +19,7 @@ public class Torrent {
 
     private String title;
 
-    @Column(length = 1024, unique = true) // Increase the size limit
+    @Column(length = 2048, unique = true) // Increase the size limit
     private String url;
 
     @Column(name = "download_path")
