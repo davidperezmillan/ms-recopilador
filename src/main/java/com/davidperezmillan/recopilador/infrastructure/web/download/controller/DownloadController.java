@@ -22,7 +22,7 @@ public class DownloadController {
     }
 
     /**
-     * add torrents to transmision
+     * add torrents to BBDD
      * @return
      */
     @PostMapping("/save")
@@ -35,7 +35,7 @@ public class DownloadController {
     }
 
     /**
-     * add torrents to bbdd
+     * add torrents to transmission
      * @return
      */
     @PostMapping("/add")

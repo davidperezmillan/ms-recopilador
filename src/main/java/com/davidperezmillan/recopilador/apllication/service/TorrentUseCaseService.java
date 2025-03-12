@@ -111,4 +111,14 @@ public class TorrentUseCaseService implements TorrentUseCase {
         transmissionServerService.setAltSpeedEnabled(serverTransmission, altSpeed);
 
     }
+
+    @Override
+    public String getAltSpeed(String server) {
+        Transmission transmission = transmissionService.findbyName(server);
+        ServerTransmission serverTransmission = new ServerTransmission();
+        serverTransmission.setUrl(transmission.getUrl());
+        serverTransmission.setUsername(transmission.getUsername());
+        serverTransmission.setPassword(transmission.getPassword());
+        return transmissionServerService.getAltSpeedEnabled(serverTransmission);
+    }
 }
