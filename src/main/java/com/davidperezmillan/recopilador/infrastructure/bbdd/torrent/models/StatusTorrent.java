@@ -2,9 +2,10 @@ package com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models;
 
 public enum StatusTorrent {
 
-    PENDING,
+    PENDING_DOWNLOAD,
     DOWNLOADING,
     COMPLETE,
     ERROR,
-    DELETED
+    DELETED,
+    UNKOWN;
 }

@@ -2,6 +2,7 @@ package com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.services;
 
 import com.davidperezmillan.recopilador.domain.models.Download;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.mappers.TorrentMapper;
+import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.StatusTorrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.repositories.TorrentRepository;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +26,12 @@ public class TorrentService {
     public List<Torrent> getAllTorrents() {
         return torrentRepository.findAll();
     }
+
+
+    public List<Torrent> getTorrentsByStatus(StatusTorrent status) {
+        return torrentRepository.findByStatusOrStatusIsNull(status);
+    }
+
 
     public Torrent addTorrent(Download download) throws SQLIntegrityConstraintViolationException {
         return save(sanitizeTorrent(TorrentMapper.map(download)));
