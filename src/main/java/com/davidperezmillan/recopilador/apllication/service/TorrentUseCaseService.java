@@ -3,6 +3,7 @@ package com.davidperezmillan.recopilador.apllication.service;
 import com.davidperezmillan.recopilador.apllication.usecases.TorrentUseCase;
 import com.davidperezmillan.recopilador.domain.models.Download;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.mappers.TorrentMapper;
+import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.StatusTorrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.services.TorrentService;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.models.Transmission;
@@ -10,6 +11,7 @@ import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.service
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.AddTransmissionRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.AllTorrentRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.ServerTransmission;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionStatus;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.transmission.services.TransmissionServerService;
 import lombok.extern.log4j.Log4j2;
@@ -59,8 +61,10 @@ public class TorrentUseCaseService implements TorrentUseCase {
     @Override
     public void addTorrents() {
         // recuperar todos los torrent
-        torrentService.getAllTorrents().forEach(torrent -> {
+        log.info("Recuperando torrents pendientes de descarga");
+        torrentService.getTorrentsByStatus(StatusTorrent.PENDING_DOWNLOAD).forEach(torrent -> {
 
+            log.info("Añadiendo torrent: {}", torrent.getUrl());
             // creamos el request
             AddTransmissionRequest addTransmissionRequest = new AddTransmissionRequest();
             addTransmissionRequest.setMangetLink(torrent.getUrl());
@@ -81,6 +85,7 @@ public class TorrentUseCaseService implements TorrentUseCase {
                 torrent.setTitle(transmissionTorrent.getName());
                 torrent.setHashString(transmissionTorrent.getHashString());
                 torrent.setPercentDone(transmissionTorrent.getPercentDone());
+                torrent.setStatus(StatusTorrent.DOWNLOADING);
                 torrentService.save(torrent);
             }
 
