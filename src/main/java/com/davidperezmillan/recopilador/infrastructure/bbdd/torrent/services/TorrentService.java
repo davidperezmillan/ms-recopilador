@@ -31,7 +31,7 @@ public class TorrentService {
     }
 
     public Torrent save(Torrent torrent) {
-        return torrentRepository.save(torrent);
+        return torrentRepository.save(sanitizeTorrent(torrent));
     }
 
 
