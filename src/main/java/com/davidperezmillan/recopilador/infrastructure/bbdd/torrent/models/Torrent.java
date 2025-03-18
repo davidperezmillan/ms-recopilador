@@ -5,6 +5,8 @@ import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.models.
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Table(name = "`torrent`")
@@ -31,11 +33,12 @@ public class Torrent {
 
     private double percentDone;
 
+    @Column(nullable = false)
+    private LocalDateTime dateAdded = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "server_id")
     private Transmission transmission;
-
 
 
 }
