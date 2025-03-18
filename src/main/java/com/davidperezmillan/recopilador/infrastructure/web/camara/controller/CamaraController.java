@@ -35,7 +35,7 @@ public class CamaraController {
                 .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-ES,es;q=0.9")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ZGF2aWQ6Y2xvbjk4OTc=")
                 .defaultHeader(HttpHeaders.CONNECTION, "keep-alive")
-                .defaultHeader(HttpHeaders.REFERER, "http://" + ip + "/index.html?page=maintenance")
+                .defaultHeader(HttpHeaders.REFERER, "http://192.168.68.127/index.html?page=maintenance")
                 .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
                 .defaultHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
