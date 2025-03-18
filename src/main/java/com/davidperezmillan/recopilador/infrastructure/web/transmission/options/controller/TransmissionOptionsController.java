@@ -19,6 +19,12 @@ public class TransmissionOptionsController {
     }
 
 
+    @GetMapping("/servers")
+    public ResponseEntity<ApplicationResponse<List<String>>> getServers() {
+        List<String> servers = torrentUseCase.getServers();
+        return ResponseEntity.ok(new ApplicationResponse<List<String>>(servers.size(), servers));
+    }
+
     /**
      * get alt speed
      * @param server
