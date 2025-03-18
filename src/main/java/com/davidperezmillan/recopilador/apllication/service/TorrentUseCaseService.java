@@ -11,7 +11,6 @@ import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.service
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.AddTransmissionRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.AllTorrentRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.ServerTransmission;
-import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionStatus;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.transmission.services.TransmissionServerService;
 import lombok.extern.log4j.Log4j2;
@@ -104,6 +103,13 @@ public class TorrentUseCaseService implements TorrentUseCase {
         allTorrentRequest.setServer(serverTransmission);
 
         return transmissionServerService.getListDownloadDir(allTorrentRequest);
+    }
+
+    @Override
+    public List<String> getServers(){
+        List<Transmission> servers = transmissionService.findAll();
+        // Recuperar los nombres de los servidores
+        return servers.stream().map(Transmission::getName).toList();
     }
 
     @Override
