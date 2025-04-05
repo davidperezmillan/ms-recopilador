@@ -14,6 +14,7 @@ import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.transmission.services.TransmissionServerService;
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +61,12 @@ public class TorrentUseCaseService implements TorrentUseCase {
     @Override
     public void addTorrents() {
         // recuperar todos los torrent
+
+        // añadir al log un campo con un literal
+
+        MDC.put("type-log", "FUNCIONAL");
         log.info("Recuperando torrents pendientes de descarga");
+
         torrentService.getTorrentsByStatus(StatusTorrent.PENDING_DOWNLOAD).forEach(torrent -> {
 
             log.info("Añadiendo torrent: {}", torrent.getUrl());

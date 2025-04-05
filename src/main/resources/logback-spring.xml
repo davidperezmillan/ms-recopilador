@@ -1,11 +1,16 @@
 <configuration>
+    <property name="APPLICATION_NAME" value="recopilador" />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-        <!-- Campo dinámico desde Spring -->
-        <customFields>{"app_name": ${spring.application.name}"}</customFields>
+        <!-- añadir un campo adicional al log -->
+        <additionalField>
+            <name>application</name>
+            <value>${APPLICATION_NAME}</value>
+        </additionalField>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
     </root>
 </configuration>
+
