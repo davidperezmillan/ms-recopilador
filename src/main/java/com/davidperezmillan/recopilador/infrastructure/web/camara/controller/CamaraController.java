@@ -46,4 +46,23 @@ public class CamaraController {
                 .bodyToMono(String.class);
     }
 
+    @GetMapping("/reset")
+    public Mono<String> resetCamera() {
+        WebClient webClient = WebClient.builder()
+                .baseUrl("http://192.168.68.127")
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-ES,es;q=0.9")
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ZGF2aWQ6Y2xvbjk4OTc=")
+                .defaultHeader(HttpHeaders.CONNECTION, "keep-alive")
+                .defaultHeader(HttpHeaders.REFERER, "http://192.168.68.127/index.html?page=maintenance")
+                .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
+                .defaultHeader("X-Requested-With", "XMLHttpRequest")
+                .build();
+
+        return webClient.get()
+                .uri("/cgi-bin/reset.sh")
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
 }
