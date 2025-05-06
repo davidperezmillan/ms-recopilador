@@ -1,18 +1,5 @@
-server:
-  port: 8080
-
 spring:
-  application:
-    name: ms-recopilador
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.mariadb.jdbc.Driver
+  profiles:
+    active: ${SPRING_PROFILE:local}
 
-  jpa:
-    database-platform: org.hibernate.dialect.MariaDBDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: false
 
