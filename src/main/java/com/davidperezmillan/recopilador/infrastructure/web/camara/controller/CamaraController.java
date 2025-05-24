@@ -51,7 +51,7 @@ public class CamaraController {
     }
 
     @GetMapping("/reboot/{camara}")
-    public Mono<String> rebootCameraByCamara(@RequestParam("camara") String camara) {
+    public Mono<String> rebootCameraByCamara(@PathVariable("camara") String camara) {
         String url = "http://192.168.68." + camaras.get(camara);
         WebClient webClient = WebClient.builder()
                 .baseUrl(url)
@@ -90,7 +90,7 @@ public class CamaraController {
     }
 
     @GetMapping("/reset/{camara}")
-    public Mono<String> resetCameraByCamara(@RequestParam("camara") String camara) {
+    public Mono<String> resetCameraByCamara(@PathVariable("camara") String camara) {
         String url = "http://192.168.68." + camaras.get(camara);
         WebClient webClient = WebClient.builder()
                 .baseUrl(url)
