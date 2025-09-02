@@ -7,5 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ScraperUseCase {
 
+    // Comentario de prueba
     CompletableFuture<List<Serie>> scrapAllSeries();
+
 }
