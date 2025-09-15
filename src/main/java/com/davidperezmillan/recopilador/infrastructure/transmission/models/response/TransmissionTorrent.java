@@ -16,6 +16,8 @@ public class TransmissionTorrent {
     private TransmissionStatus status;
     private List<File> files;
     private String downloadDir;
+    private long addedDate;
+
 
 
 }

@@ -6,6 +6,7 @@ import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.request.ArgumentsRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.request.TransmissionRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionResponse;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionStatus;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
@@ -17,8 +18,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.netty.http.client.HttpClient;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -100,7 +103,7 @@ public class TransmissionServerService {
             TransmissionRequest request = new TransmissionRequest();
             request.setMethod("torrent-get");
             ArgumentsRequest arguments = new ArgumentsRequest();
-            arguments.setFields(new String[]{"id", "name", "status", "percentDone", "downloadDir", "hashString", "files"});
+            arguments.setFields(new String[]{"id", "name", "addedDate", "status", "percentDone", "downloadDir", "hashString", "files"});
             request.setArguments(arguments);
 
             TransmissionResponse response = webClient.post()
@@ -214,6 +217,67 @@ public class TransmissionServerService {
 
     }
 
+    public List<TransmissionTorrent>  getOldTorrent(AllTorrentRequest allTorrentRequest, boolean deleteData, int days) {
+        // get all torrents and filter by stauts = paused or stopped and date added > 30 days
+        List<TransmissionTorrent> allTorrents = getAllTorrents(allTorrentRequest);
+        List<TransmissionTorrent> oldTorrent = allTorrents.stream()
+                .filter(torrent -> {
+                    // convertir torrent.getAddedDate() a long
+                    Date addedDate = new Date(torrent.getAddedDate() * 1000L);
+                    Date currentDate = new Date();
+                    long diffInMillies = currentDate.getTime() - addedDate.getTime();
+                    long diffInDays = diffInMillies / (1000 * 60 * 60 * 24);
+                    return (torrent.getStatus() == TransmissionStatus.PAUSED) && diffInDays > days;
+                })
+                .toList();
+        return oldTorrent;
+
+    }
+
+
+
+
+public TransmissionResponse deleteTorrent(ServerTransmission serverTransmission, int torrentId, boolean deleteData) {
+        if (sessionId == null) {
+            getSessionId(serverTransmission);
+        }
+        try {
+            HttpHeaders headers = createHeaders(serverTransmission);
+            headers.set("X-Transmission-Session-Id", sessionId);
+
+            TransmissionRequest request = new TransmissionRequest();
+            request.setMethod("torrent-remove");
+            ArgumentsRequest arguments = new ArgumentsRequest();
+            arguments.setIds(new int[]{torrentId});
+            arguments.setDeleteLocalData(deleteData);
+            request.setArguments(arguments);
+
+            TransmissionResponse response = webClient.post()
+                    .uri(serverTransmission.getUrl())
+                    .headers(httpHeaders -> httpHeaders.addAll(headers))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(request)
+                    .retrieve()
+                    .bodyToMono(TransmissionResponse.class)
+                    .block();
+
+            if (response != null && "success".equals(response.getResult())) {
+                log.info("Torrent {} borrado correctamente.", torrentId);
+                return response;
+            }
+
+        } catch (WebClientResponseException.Conflict e) {
+            sessionId = e.getHeaders().getFirst("X-Transmission-Session-Id");
+            log.info("Session ID actualizado por error: {}", sessionId);
+            if (sessionId != null) {
+                return deleteTorrent(serverTransmission, torrentId, deleteData);
+            }
+        } catch (Exception e) {
+            log.error("Transmission no está disponible.", e);
+            return null;
+        }
+        return null;
+    }
 
     private void getSessionId(ServerTransmission serverTransmission) {
         try {
@@ -242,5 +306,5 @@ public class TransmissionServerService {
         headers.set("Authorization", authHeader);
         return headers;
     }
-
 }
+

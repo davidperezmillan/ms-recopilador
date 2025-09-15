@@ -11,6 +11,7 @@ import com.davidperezmillan.recopilador.infrastructure.bbdd.transmission.service
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.AddTransmissionRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.AllTorrentRequest;
 import com.davidperezmillan.recopilador.infrastructure.transmission.dtos.request.ServerTransmission;
+import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionResponse;
 import com.davidperezmillan.recopilador.infrastructure.transmission.models.response.TransmissionTorrent;
 import com.davidperezmillan.recopilador.infrastructure.transmission.services.TransmissionServerService;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +19,7 @@ import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -137,5 +139,37 @@ public class TorrentUseCaseService implements TorrentUseCase {
         serverTransmission.setUsername(transmission.getUsername());
         serverTransmission.setPassword(transmission.getPassword());
         return transmissionServerService.getAltSpeedEnabled(serverTransmission);
+    }
+
+    @Override
+    public Integer[] deleteOldTorrents(String server, boolean deleteData, int days) {
+        Transmission transmission = transmissionService.findbyName(server);
+        AllTorrentRequest allTorrentRequest = new AllTorrentRequest();
+        ServerTransmission serverTransmission = new ServerTransmission();
+        serverTransmission.setUrl(transmission.getUrl());
+        serverTransmission.setUsername(transmission.getUsername());
+        serverTransmission.setPassword(transmission.getPassword());
+        allTorrentRequest.setServer(serverTransmission);
+        List<TransmissionTorrent> oldTorrent = transmissionServerService.getOldTorrent(allTorrentRequest, deleteData, days);
+        // delete old torrents transmissionServerService
+        Integer[] idsBorrados = oldTorrent.stream()
+                .filter(torrent -> transmissionServerService.deleteTorrent(serverTransmission, torrent.getId(), deleteData) != null)
+                .map(TransmissionTorrent::getId)
+                .toArray(Integer[]::new);
+        return idsBorrados;
+    }
+
+    @Override
+    public Integer deleteTorrent(String server, boolean deleteData, int id) {
+        Transmission transmission = transmissionService.findbyName(server);
+        AllTorrentRequest allTorrentRequest = new AllTorrentRequest();
+        ServerTransmission serverTransmission = new ServerTransmission();
+        serverTransmission.setUrl(transmission.getUrl());
+        serverTransmission.setUsername(transmission.getUsername());
+        serverTransmission.setPassword(transmission.getPassword());
+        allTorrentRequest.setServer(serverTransmission);
+        TransmissionResponse resp = transmissionServerService.deleteTorrent(serverTransmission, id, deleteData);
+        log.info("Respuesta al borrar el torrent: {}", resp);
+        return id;
     }
 }

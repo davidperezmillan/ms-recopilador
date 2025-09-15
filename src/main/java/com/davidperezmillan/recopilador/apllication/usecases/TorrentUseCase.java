@@ -18,4 +18,8 @@ public interface TorrentUseCase {
     void toggleAltSpeed(String server, boolean altSpeed);
 
     String getAltSpeed(String server);
+
+    Integer[] deleteOldTorrents(String server, boolean deleteData, int days);
+
+    Integer deleteTorrent(String server, boolean deleteData, int id);
 }

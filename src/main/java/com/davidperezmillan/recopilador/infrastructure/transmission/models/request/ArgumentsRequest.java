@@ -23,10 +23,12 @@ public class ArgumentsRequest {
     private boolean altSpeedEnabled;
 
     // si el campo no esta o es nulo, no se pinta en el json
-    private String[] ids;
+    private int[] ids;
 
     @JsonProperty("download-dir") // Add this annotation
     private String downloadDir; // Add this field
 
+    @JsonProperty("delete-local-data")
+    private boolean deleteLocalData;
 
 }

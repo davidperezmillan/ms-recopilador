@@ -9,6 +9,7 @@ import com.davidperezmillan.recopilador.infrastructure.web.download.mappers.Down
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -54,4 +55,23 @@ public class DownloadController {
         return ResponseEntity.ok(new ApplicationResponse<List<String>>(downloadDir.size(), downloadDir));
     }
 
+    @DeleteMapping("/delete/old/{server}")
+    public ResponseEntity<ApplicationResponse<String>> deleteOldTorrents(
+            @PathVariable("server") String server,
+            @RequestParam("days")  int days,
+            @RequestParam("deleteData") boolean deleteData) throws TransmissionException {
+        Integer[] respuesta = torrentUseCase.deleteOldTorrents(server, deleteData, days);
+        String stringIds = String.join(", ", Arrays.toString(respuesta));
+        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Torrents deleted: " + stringIds));
+    }
+
+    @DeleteMapping("/delete/{server}/{id}")
+    public ResponseEntity<ApplicationResponse<String>> deleteTorrentById(
+            @PathVariable("server") String server,
+            @PathVariable("id") String id,
+            @RequestParam("deleteData") boolean deleteData) throws TransmissionException {
+        int respuesta = torrentUseCase.deleteTorrent(server, deleteData, Integer.parseInt(id));
+        String stringIds = String.valueOf(respuesta);
+        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Torrents deleted: " + stringIds));
+    }
 }
