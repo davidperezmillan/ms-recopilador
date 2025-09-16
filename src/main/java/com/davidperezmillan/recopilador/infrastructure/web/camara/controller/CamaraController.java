@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 @RestController
@@ -15,8 +17,8 @@ public class CamaraController {
 
     HashMap<String, String> camaras = new HashMap<>();
     {
-        camaras.put("salon", "127");
-        camaras.put("hab", "128");
+        camaras.put("salon", "http://192.168.68.127");
+        camaras.put("hab", "http://192.168.68.128");
     }
 
 
@@ -31,30 +33,46 @@ public class CamaraController {
     //  --insecure
 
 
+    // Combina las respuestas de todas las cámaras y las devuelve en un solo Mono<String>
     @GetMapping("/reboot")
     public Mono<String> rebootCamera() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl("http://192.168.68.127")
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-ES,es;q=0.9")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ZGF2aWQ6Y2xvbjk4OTc=")
-                .defaultHeader(HttpHeaders.CONNECTION, "keep-alive")
-                .defaultHeader(HttpHeaders.REFERER, "http://192.168.68.127/index.html?page=maintenance")
-                .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
-                .defaultHeader("X-Requested-With", "XMLHttpRequest")
-                .build();
+        List<Mono<String>> peticiones = new ArrayList<>();
+        for (String camara : camaras.keySet()) {
+            String ipCamara = camaras.get(camara);
+            WebClient webClient = WebClient.builder()
+                    .baseUrl(ipCamara)
+                    .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-ES,es;q=0.9")
+                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ZGF2aWQ6Y2xvbjk4OTc=")
+                    .defaultHeader(HttpHeaders.CONNECTION, "keep-alive")
+                    .defaultHeader(HttpHeaders.REFERER, "http://192.168.68.127/index.html?page=maintenance")
+                    .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
+                    .defaultHeader("X-Requested-With", "XMLHttpRequest")
+                    .build();
 
-        return webClient.get()
-                .uri("/cgi-bin/reboot.sh")
-                .retrieve()
-                .bodyToMono(String.class);
+            peticiones.add(
+                    webClient.get()
+                            .uri("/cgi-bin/reboot.sh")
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .map(respuesta -> camara + ": " + respuesta)
+            );
+        }
+        return Mono.zip(peticiones, resultados -> {
+            StringBuilder combinado = new StringBuilder();
+            for (Object resultado : resultados) {
+                combinado.append(resultado.toString()).append("\n");
+            }
+            return combinado.toString();
+        });
     }
+
 
     @GetMapping("/reboot/{camara}")
     public Mono<String> rebootCameraByCamara(@PathVariable("camara") String camara) {
-        String url = "http://192.168.68." + camaras.get(camara);
+        String ipCamara = camaras.get(camara);
         WebClient webClient = WebClient.builder()
-                .baseUrl(url)
+                .baseUrl(ipCamara)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-ES,es;q=0.9")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ZGF2aWQ6Y2xvbjk4OTc=")
@@ -69,6 +87,7 @@ public class CamaraController {
                 .retrieve()
                 .bodyToMono(String.class);
     }
+
 
     @GetMapping("/reset")
     public Mono<String> resetCamera() {

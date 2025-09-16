@@ -56,22 +56,21 @@ public class DownloadController {
     }
 
     @DeleteMapping("/delete/old/{server}")
-    public ResponseEntity<ApplicationResponse<String>> deleteOldTorrents(
+    public ResponseEntity<ApplicationResponse<String[]>> deleteOldTorrents(
             @PathVariable("server") String server,
             @RequestParam("days")  int days,
             @RequestParam("deleteData") boolean deleteData) throws TransmissionException {
         Integer[] respuesta = torrentUseCase.deleteOldTorrents(server, deleteData, days);
-        String stringIds = String.join(", ", Arrays.toString(respuesta));
-        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Torrents deleted: " + stringIds));
+        return ResponseEntity.ok(new ApplicationResponse<String[]>(respuesta.length, Arrays.stream(respuesta).map(String::valueOf).toArray(String[]::new)));
     }
 
     @DeleteMapping("/delete/{server}/{id}")
-    public ResponseEntity<ApplicationResponse<String>> deleteTorrentById(
+    public ResponseEntity<ApplicationResponse<String[]>> deleteTorrentById(
             @PathVariable("server") String server,
             @PathVariable("id") String id,
             @RequestParam("deleteData") boolean deleteData) throws TransmissionException {
         int respuesta = torrentUseCase.deleteTorrent(server, deleteData, Integer.parseInt(id));
         String stringIds = String.valueOf(respuesta);
-        return ResponseEntity.ok(new ApplicationResponse<String>(1, "Torrents deleted: " + stringIds));
+        return ResponseEntity.ok(new ApplicationResponse<String[]>(1, new String[]{stringIds}));
     }
 }
