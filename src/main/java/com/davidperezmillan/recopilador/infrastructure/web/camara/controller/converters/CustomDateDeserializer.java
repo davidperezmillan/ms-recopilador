@@ -7,14 +7,16 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CustomDateDeserializer extends JsonDeserializer<Date> {
+public class CustomDateDeserializer extends JsonDeserializer<String> {
     private static final SimpleDateFormat formatter = new SimpleDateFormat("'Date: 'yyyy-MM-dd' Time: 'HH:mm");
 
     @Override
-    public Date deserialize(JsonParser p, DeserializationContext ctxt) {
+    public String deserialize(JsonParser p, DeserializationContext ctxt) {
         try {
             String value = p.getText();
-            return formatter.parse(value);
+            Date fecha = formatter.parse(value);
+            // devolvemos la fecha como un string con el formato dd-mm-yyyy:HH
+            return new SimpleDateFormat("dd-MM-yyyy:HH").format(fecha);
         } catch (Exception e) {
             return null;
         }

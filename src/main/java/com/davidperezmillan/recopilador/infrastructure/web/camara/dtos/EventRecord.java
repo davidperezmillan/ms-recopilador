@@ -13,6 +13,6 @@ import java.util.Date;
 public class EventRecord {
 
     @JsonDeserialize(using = CustomDateDeserializer.class)
-    private Date datetime;
+    private String datetime;
     private String dirname;
 }
