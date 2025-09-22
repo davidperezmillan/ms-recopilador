@@ -22,4 +22,6 @@ public interface TorrentUseCase {
     Integer[] deleteOldTorrents(String server, boolean deleteData, int days);
 
     Integer deleteTorrent(String server, boolean deleteData, int id);
+
+    List<String> findDownloadDirByName(String server, String name);
 }

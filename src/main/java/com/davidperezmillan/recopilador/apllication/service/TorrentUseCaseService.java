@@ -19,8 +19,11 @@ import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Log4j2
@@ -171,5 +174,68 @@ public class TorrentUseCaseService implements TorrentUseCase {
         TransmissionResponse resp = transmissionServerService.deleteTorrent(serverTransmission, id, deleteData);
         log.info("Respuesta al borrar el torrent: {}", resp);
         return id;
+    }
+
+    @Override
+    public List<String> findDownloadDirByName(String server, String name) {
+        Transmission transmission = transmissionService.findbyName(server);
+        AllTorrentRequest allTorrentRequest = new AllTorrentRequest();
+        ServerTransmission serverTransmission = new ServerTransmission();
+        serverTransmission.setUrl(transmission.getUrl());
+        serverTransmission.setUsername(transmission.getUsername());
+        serverTransmission.setPassword(transmission.getPassword());
+        allTorrentRequest.setServer(serverTransmission);
+
+        List<String> downloadsDir = transmissionServerService.getListDownloadDir(allTorrentRequest);
+        // if name is a magnet link, get the name from the magnet link
+        if (name.startsWith("magnet:")) {
+            String torrentName = getTorrentNameFromMagnet(name);
+            if (torrentName != null && !torrentName.isEmpty()) {
+                name = torrentName;
+            }
+        }
+        log.info("Filtering download dirs by name: {}", name);
+        String filteredName = name;
+        // filter the list of download dir by name ignoring case
+        return downloadsDir.stream()
+                .filter(dir -> dir.toLowerCase().contains(filteredName.toLowerCase()))
+                .toList();
+    }
+
+    private static String getTorrentNameFromMagnet(String magnetLink) {
+        log.info("Extracting torrent name from magnet link: {}", magnetLink);
+        try {
+            // Dividir los parámetros del magnet link
+            String[] parts = magnetLink.split("\\?");
+            if (parts.length < 2) {
+                return null; // No hay parámetros
+            }
+
+            String[] params = parts[1].split("&");
+            Map<String, String> paramMap = new HashMap<>();
+
+            // Parsear los parámetros
+            for (String param : params) {
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 2) {
+                    paramMap.put(keyValue[0], URLDecoder.decode(keyValue[1], "UTF-8"));
+                }
+            }
+
+            // Retornar el valor del parámetro "dn" (Display Name)
+            String dn =  paramMap.get("dn");
+            // eliminar los textos dentro de corchetes []
+            dn = dn.replaceAll("\\[.*?\\]", "").trim();
+            // recuperar las 2 primeras palabras si existen o una sola palabra
+            String[] words = dn.split("\\s+");
+            if (words.length >= 2) {
+                return words[0] + " " + words[1];
+            } else{
+                return words[0];
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

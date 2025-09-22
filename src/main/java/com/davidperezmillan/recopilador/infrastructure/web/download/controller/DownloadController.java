@@ -55,6 +55,22 @@ public class DownloadController {
         return ResponseEntity.ok(new ApplicationResponse<List<String>>(downloadDir.size(), downloadDir));
     }
 
+    /**
+     * find download dir from server by name
+     * @param server
+     * @param name
+     * @return list of paths download dir
+     * @throws TransmissionException
+     */
+    @PostMapping("/dir/{server}")
+    public ResponseEntity<ApplicationResponse<List<String>>> findDownloadDirByName(
+            @PathVariable("server") String server,
+            @RequestBody String name) throws TransmissionException {
+        List<String> downloadDir = torrentUseCase.findDownloadDirByName(server, name);
+        return ResponseEntity.ok(new ApplicationResponse<List<String>>(downloadDir.size(), downloadDir));
+    }
+
+
     @DeleteMapping("/delete/old/{server}")
     public ResponseEntity<ApplicationResponse<String[]>> deleteOldTorrents(
             @PathVariable("server") String server,
