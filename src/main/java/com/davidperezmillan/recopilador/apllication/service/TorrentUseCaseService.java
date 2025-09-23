@@ -2,6 +2,7 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.TorrentUseCase;
 import com.davidperezmillan.recopilador.domain.models.Download;
+import com.davidperezmillan.recopilador.domain.models.NameTorrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.mappers.TorrentMapper;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.StatusTorrent;
 import com.davidperezmillan.recopilador.infrastructure.bbdd.torrent.models.Torrent;
@@ -20,7 +21,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.net.URLDecoder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +177,7 @@ public class TorrentUseCaseService implements TorrentUseCase {
     }
 
     @Override
-    public List<String> findDownloadDirByName(String server, String name) {
+    public List<NameTorrent> findDownloadDirByName(String server, String name) {
         Transmission transmission = transmissionService.findbyName(server);
         AllTorrentRequest allTorrentRequest = new AllTorrentRequest();
         ServerTransmission serverTransmission = new ServerTransmission();
@@ -201,10 +201,26 @@ public class TorrentUseCaseService implements TorrentUseCase {
             }
         }
         log.info("Filtered name to search: {}", name);
-        String filteredName = name;
-        // filter the list of download dir by name ignoring case
+
+        // recuperar las 2 primeras palabras si existen o una sola palabra
+        String[] words = name.split("\\s+");
+        String filteredName;
+        if (words.length >= 2) {
+            filteredName = words[0] + " " + words[1];
+        } else if (words.length == 1) {
+            filteredName = words[0];
+        } else {
+            filteredName = name; // Si no hay palabras, usar el nombre completo
+        }
+        String finalName = name;
         return downloadsDir.stream()
                 .filter(dir -> dir.toLowerCase().contains(filteredName.toLowerCase()))
+                .map(dir -> {
+                    NameTorrent nameTorrent = new NameTorrent();
+                    nameTorrent.setName(finalName);
+                    nameTorrent.setTorrentPath(dir);
+                    return nameTorrent;
+                })
                 .toList();
     }
 
@@ -232,13 +248,7 @@ public class TorrentUseCaseService implements TorrentUseCase {
             String dn =  paramMap.get("dn");
             // eliminar los textos dentro de corchetes []
             dn = dn.replaceAll("\\[.*?\\]", "").trim();
-            // recuperar las 2 primeras palabras si existen o una sola palabra
-            String[] words = dn.split("\\s+");
-            if (words.length >= 2) {
-                return words[0] + " " + words[1];
-            } else{
-                return words[0];
-            }
+            return dn;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

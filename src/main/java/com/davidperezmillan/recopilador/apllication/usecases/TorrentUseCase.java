@@ -1,6 +1,7 @@
 package com.davidperezmillan.recopilador.apllication.usecases;
 
 import com.davidperezmillan.recopilador.domain.models.Download;
+import com.davidperezmillan.recopilador.domain.models.NameTorrent;
 
 import java.util.List;
 
@@ -23,5 +24,5 @@ public interface TorrentUseCase {
 
     Integer deleteTorrent(String server, boolean deleteData, int id);
 
-    List<String> findDownloadDirByName(String server, String name);
+    List<NameTorrent> findDownloadDirByName(String server, String name);
 }
