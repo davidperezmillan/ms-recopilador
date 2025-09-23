@@ -187,14 +187,20 @@ public class TorrentUseCaseService implements TorrentUseCase {
         allTorrentRequest.setServer(serverTransmission);
 
         List<String> downloadsDir = transmissionServerService.getListDownloadDir(allTorrentRequest);
+        log.info("Filtering download dirs by name: {}", name);
+        name = name.trim();
+        // quitar las comillas dobles si las tiene
+        name = name.replaceAll("^\"|\"$", "");
         // if name is a magnet link, get the name from the magnet link
         if (name.startsWith("magnet:")) {
+            log.info("Name is a magnet link, extracting torrent name from magnet link");
             String torrentName = getTorrentNameFromMagnet(name);
             if (torrentName != null && !torrentName.isEmpty()) {
+                log.info("Extracted torrent name from magnet link: {}", torrentName);
                 name = torrentName;
             }
         }
-        log.info("Filtering download dirs by name: {}", name);
+        log.info("Filtered name to search: {}", name);
         String filteredName = name;
         // filter the list of download dir by name ignoring case
         return downloadsDir.stream()
