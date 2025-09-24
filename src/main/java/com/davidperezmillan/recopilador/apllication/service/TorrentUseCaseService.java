@@ -213,15 +213,21 @@ public class TorrentUseCaseService implements TorrentUseCase {
             filteredName = name; // Si no hay palabras, usar el nombre completo
         }
         String finalName = name;
-        return downloadsDir.stream()
+
+        String propousedDir = "/downloads/complete/"+finalName+"/Session 1";
+        log.info("Propoused dir: {}", propousedDir);
+
+        List<NameTorrent> response = downloadsDir.stream()
                 .filter(dir -> dir.toLowerCase().contains(filteredName.toLowerCase()))
-                .map(dir -> {
-                    NameTorrent nameTorrent = new NameTorrent();
-                    nameTorrent.setName(finalName);
-                    nameTorrent.setTorrentPath(dir);
-                    return nameTorrent;
-                })
+                .map(dir -> new NameTorrent(finalName, dir, propousedDir))
                 .toList();
+
+        if (response.isEmpty()) {
+            log.info("No download dirs found matching the name: {}", filteredName);
+            NameTorrent notFound = new NameTorrent(finalName, null, propousedDir);
+            response = List.of(notFound);
+        }
+        return response;
     }
 
     private static String getTorrentNameFromMagnet(String magnetLink) {
