@@ -3,7 +3,7 @@ server:
 
 app:
     health:
-        directory: ${HEALTH_DIR:/media/wd_black/camara}
+        directory: /health
 
 spring:
     application:
