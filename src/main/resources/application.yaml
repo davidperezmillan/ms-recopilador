@@ -3,3 +3,6 @@ spring:
     active: ${SPRING_PROFILE:local}
 
 
+app:
+    health:
+        directory: ${HEALTH_DIR:/tmp/health}
