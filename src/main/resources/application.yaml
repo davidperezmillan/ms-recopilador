@@ -5,4 +5,4 @@ spring:
 
 app:
     health:
-        directory: ${HEALTH_DIR:/tmp/health}
+        directory: /health

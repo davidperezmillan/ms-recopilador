@@ -16,6 +16,8 @@ services:
             DB_USERNAME: "${DB_USERNAME}" # Usar la variable DB_USERNAME del archivo .env
             DB_PASSWORD: "${DB_PASSWORD}" # Usar la variable DB_PASSWORD del archivo .env
             HEALTH_DIR: "${HEALTH_DIR}" # Usar la variable MEDIA_DIR del archivo .env
+        volumes:
+            -   /health:${HEALTH_DIR}
         restart: always
         logging:
             driver: "loki"
