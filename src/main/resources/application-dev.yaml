@@ -3,7 +3,7 @@ server:
 
 app:
     health:
-        directory: ${HEALTH_DIR}
+        directory: ${HEALTH_DIR:/tmp/health}
 
 spring:
     application:
