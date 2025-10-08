@@ -41,11 +41,53 @@ public class HealthCheckService {
 
         if (!exists) {
             //devuelve el campo detailsFile como String[] vacio
-            String[] emptyArray = new String[0];
+            EventsFile emptyArray = EventsFile.builder()
+                    .path(path)
+                    .status(false)
+                    .EventDir(new String[]{"No existe el directorio"})
+                    .build();
             return HealthStatus.builder().healthy(false).eventsFile(emptyArray).build();
         }
+
         // Recorre el directorio y cuenta los subdirectorios
-        String[] eventsFile = file.list((current, name) -> new java.io.File(current, name).isDirectory());
-        return HealthStatus.builder().healthy(true).eventsFile(eventsFile).build();
+        try {
+            java.io.File[] directories = file.listFiles(java.io.File::isDirectory);
+            if (directories == null) {
+                EventsFile emptyArray = EventsFile.builder()
+                        .path(path)
+                        .status(false)
+                        .EventDir(new String[]{"No se pudo leer el directorio"})
+                        .build();
+                return HealthStatus.builder().healthy(false).eventsFile(emptyArray).build();
+            }
+
+            // Crear array con los nombres de los subdirectorios
+            String[] directoryNames = new String[directories.length];
+            for (int i = 0; i < directories.length; i++) {
+                directoryNames[i] = directories[i].getName();
+            }
+
+            // Crear el objeto EventsFile con todos los directorios encontrados
+            EventsFile eventsFile = EventsFile.builder()
+                    .path(path)
+                    .status(true)
+                    .EventDir(directoryNames)
+                    .build();
+
+            // Retornar el resultado exitoso
+            return HealthStatus.builder()
+                    .healthy(true)
+                    .eventsFile(eventsFile)
+                    .build();
+
+        } catch (Exception e) {
+            EventsFile emptyArray = EventsFile.builder()
+                    .path(path)
+                    .status(false)
+                    .EventDir(new String[]{"No se pudo leer el directorio"})
+                    .build();
+            return HealthStatus.builder().healthy(false).eventsFile(emptyArray).build();
+        }
+
     }
 }
