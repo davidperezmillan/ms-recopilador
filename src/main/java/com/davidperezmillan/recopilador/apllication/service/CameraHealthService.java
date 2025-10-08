@@ -69,7 +69,9 @@ public class CameraHealthService implements CameraHealthUseCase {
                 .detailsWebsite(statusWeb.getDetailsWebsite())
                 .eventsFile(statusFile.getEventsFile())
                 .build();
-        response.setHealthy(statusWeb.isHealthy() && statusFile.isHealthy());
+        if (statusWeb.isHealthy() && statusFile.isHealthy()) {
+            response.setHealthy(true);
+        }
         return response;
     }
 }
