@@ -7,3 +7,5 @@ SPRING_PROFILE=prod
 DB_URL=jdbc:mariadb://192.168.68.195:3306/develop
 DB_USERNAME=DB_USERNAME
 DB_PASSWORD=DB_PASSWORD
+
+MEDIA_DIR=/media/wd_black/camara

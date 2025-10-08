@@ -1,20 +1,17 @@
 package com.davidperezmillan.recopilador.infrastructure.health;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class HealthStatus {
     private boolean healthy;
-    private String details;
+    @JsonProperty("details_website")
+    private String detailsWebsite;
 
-    public HealthStatus(boolean healthy, String details) {
-        this.healthy = healthy;
-        this.details = details;
-    }
-
-    public boolean isHealthy() {
-        return healthy;
-    }
-
-    public String getDetails() {
-        return details;
-    }
+    @JsonProperty("details_file")
+    private String[] eventsFile;
 }
 

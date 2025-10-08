@@ -1,6 +1,10 @@
 server:
     port: 8080
 
+app:
+    health:
+        directory: /media/wd_black/camara
+
 spring:
     application:
         name: ms-recopilador

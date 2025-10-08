@@ -1,6 +1,10 @@
 server:
     port: 8080
 
+app:
+    health:
+        directory: ${HEALTH_DIR}
+
 spring:
     application:
         name: ms-recopilador

@@ -15,6 +15,7 @@ services:
             DB_URL: "${DB_URL}" # Usar la variable DB_URL del archivo .env
             DB_USERNAME: "${DB_USERNAME}" # Usar la variable DB_USERNAME del archivo .env
             DB_PASSWORD: "${DB_PASSWORD}" # Usar la variable DB_PASSWORD del archivo .env
+            MEDIA_DIR: "${MEDIA_DIR}" # Usar la variable MEDIA_DIR del archivo .env
         restart: always
         logging:
             driver: "loki"
