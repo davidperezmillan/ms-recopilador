@@ -25,4 +25,6 @@ public enum Camaras {
     public String getDirectorio() {
         return directorio;
     }
+
+
 }

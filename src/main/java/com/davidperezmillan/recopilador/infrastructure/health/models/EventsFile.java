@@ -9,5 +9,6 @@ public class EventsFile {
 
     private String path;
     private boolean status;
-    private String[] EventDir;
+    private String error;
+    private String[] eventDir;
 }

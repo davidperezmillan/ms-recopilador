@@ -1,4 +1,4 @@
-package com.davidperezmillan.recopilador.infrastructure.web.camara.dtos;
+package com.davidperezmillan.recopilador.infrastructure.health.models;
 
 import lombok.Data;
 

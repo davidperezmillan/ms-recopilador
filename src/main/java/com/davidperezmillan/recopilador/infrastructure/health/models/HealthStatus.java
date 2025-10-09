@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class HealthStatus {
-    private boolean healthy;
+    private StatusHealthyEnum healthy;
     private String details;
     private String detailsWebsite;
     private EventsFile eventsFile;

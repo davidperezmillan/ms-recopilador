@@ -1,4 +1,4 @@
-package com.davidperezmillan.recopilador.infrastructure.web.camara.dtos;
+package com.davidperezmillan.recopilador.infrastructure.health.models;
 
 
 
@@ -6,8 +6,6 @@ package com.davidperezmillan.recopilador.infrastructure.web.camara.dtos;
 import com.davidperezmillan.recopilador.infrastructure.web.camara.controller.converters.CustomDateDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class EventRecord {
