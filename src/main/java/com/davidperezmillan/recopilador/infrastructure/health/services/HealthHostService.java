@@ -118,7 +118,7 @@ public class HealthHostService {
         EventsFile eventsFile = EventsFile.builder()
                 .path(path)
                 .status(false)
-                .EventDir(new String[]{errorMessage})
+                .error(errorMessage)
                 .build();
         return HealthStatus.builder()
                 .healthy(StatusHealthyEnum.UNHEALTHY)
@@ -130,7 +130,7 @@ public class HealthHostService {
         EventsFile eventsFile = EventsFile.builder()
                 .path(path)
                 .status(true)
-                .EventDir(directoryNames)
+                .eventDir(directoryNames)
                 .build();
         return HealthStatus.builder()
                 .healthy(StatusHealthyEnum.HEALTHY)
