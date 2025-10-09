@@ -2,8 +2,8 @@ package com.davidperezmillan.recopilador.infrastructure.web.camara.controller;
 
 import com.davidperezmillan.recopilador.apllication.usecases.CameraHealthUseCase;
 import com.davidperezmillan.recopilador.domain.models.Camaras;
+import com.davidperezmillan.recopilador.infrastructure.health.models.EventsResponse;
 import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
-import com.davidperezmillan.recopilador.infrastructure.web.camara.dtos.EventsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -139,27 +139,7 @@ public class CamaraController {
         @Parameter(description = "Nombre de la cámara", example = "salon")
         @PathVariable String camara) {
         try{
-            String ipCamara = getUrlCamara(camara);
-            WebClient webClient = WebClient.builder()
-                    .baseUrl(ipCamara)
-                    .defaultHeader(HttpHeaders.ACCEPT, "application/json, text/javascript, */*; q=0.01")
-                    .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-ES,es;q=0.9")
-                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic ZGF2aWQ6Y2xvbjk4OTc=")
-                    .defaultHeader(HttpHeaders.CONNECTION, "keep-alive")
-                    .defaultHeader(HttpHeaders.REFERER, ipCamara + "/?page=eventsdir")
-                    .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36")
-                    .defaultHeader("X-Requested-With", "XMLHttpRequest")
-                    .build();
-
-            return webClient.get()
-                    .uri("/cgi-bin/eventsdir.sh")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(EventsResponse.class)
-                    .map(eventsResponse -> {
-                        eventsResponse.getRecords().sort((a, b) -> b.getDatetime().compareTo(a.getDatetime()));
-                        return eventsResponse;
-                    });
+            return Mono.just(cameraHealthUseCase.checkCamaraEvents(camara));
         } catch (IllegalArgumentException e) {
             return Mono.error(new IllegalArgumentException("Cámara no válida" + camara) );
 

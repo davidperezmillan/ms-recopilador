@@ -2,9 +2,11 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.CameraHealthUseCase;
 import com.davidperezmillan.recopilador.domain.models.Camaras;
+import com.davidperezmillan.recopilador.infrastructure.health.models.EventsResponse;
 import com.davidperezmillan.recopilador.infrastructure.health.models.StatusHealthyEnum;
 import com.davidperezmillan.recopilador.infrastructure.health.services.HealthHostService;
 import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
+import com.davidperezmillan.recopilador.infrastructure.health.services.HealthWebService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -13,9 +15,11 @@ import java.util.HashMap;
 public class CameraHealthService implements CameraHealthUseCase {
     
     private final HealthHostService healthHostService;
+    private final HealthWebService healthWebService;
     
-    public CameraHealthService(HealthHostService healthHostService) {
+    public CameraHealthService(HealthHostService healthHostService, HealthWebService healthWebService) {
         this.healthHostService = healthHostService;
+        this.healthWebService = healthWebService;
     }
     
 
@@ -44,6 +48,15 @@ public class CameraHealthService implements CameraHealthUseCase {
             return mergeHealthStatuses(statusWeb, statusFile);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Cámara no encontrada: " + cameraName);
+        }
+    }
+
+    @Override
+    public EventsResponse checkCamaraEvents(String camara) {
+        try{
+            return healthWebService.getEventsDir(camara);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Cámara no encontrada: " + camara);
         }
     }
 
