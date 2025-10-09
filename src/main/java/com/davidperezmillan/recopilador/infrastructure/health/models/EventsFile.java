@@ -1,4 +1,4 @@
-package com.davidperezmillan.recopilador.infrastructure.health;
+package com.davidperezmillan.recopilador.infrastructure.health.models;
 
 import lombok.Builder;
 import lombok.Data;

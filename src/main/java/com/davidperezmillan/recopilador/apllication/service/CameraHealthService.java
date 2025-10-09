@@ -2,8 +2,8 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.CameraHealthUseCase;
 import com.davidperezmillan.recopilador.domain.models.Camaras;
-import com.davidperezmillan.recopilador.infrastructure.health.HealthCheckService;
-import com.davidperezmillan.recopilador.infrastructure.health.HealthStatus;
+import com.davidperezmillan.recopilador.infrastructure.health.services.HealthCheckService;
+import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

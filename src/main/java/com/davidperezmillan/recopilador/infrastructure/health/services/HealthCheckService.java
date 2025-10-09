@@ -1,6 +1,7 @@
-package com.davidperezmillan.recopilador.infrastructure.health;
+package com.davidperezmillan.recopilador.infrastructure.health.services;
 
-
+import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
+import com.davidperezmillan.recopilador.infrastructure.health.models.EventsFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +67,37 @@ public class HealthCheckService {
             for (int i = 0; i < directories.length; i++) {
                 directoryNames[i] = directories[i].getName();
             }
+
+            // Ordenar los nombres de los directorios según el patrón [año]Y[mes]M[dia]D[hora]H, más reciente primero
+            java.util.Arrays.sort(directoryNames, (a, b) -> {
+                // Extraer los valores numéricos del patrón
+                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(\\d+)Y(\\d+)M(\\d+)D(\\d+)H");
+                java.util.regex.Matcher ma = pattern.matcher(a);
+                java.util.regex.Matcher mb = pattern.matcher(b);
+                if (ma.matches() && mb.matches()) {
+                    // Construir una fecha para cada directorio
+                    java.time.LocalDateTime da = java.time.LocalDateTime.of(
+                        Integer.parseInt(ma.group(1)), // año
+                        Integer.parseInt(ma.group(2)), // mes
+                        Integer.parseInt(ma.group(3)), // día
+                        Integer.parseInt(ma.group(4)), // hora
+                        0
+                    );
+                    java.time.LocalDateTime db = java.time.LocalDateTime.of(
+                        Integer.parseInt(mb.group(1)),
+                        Integer.parseInt(mb.group(2)),
+                        Integer.parseInt(mb.group(3)),
+                        Integer.parseInt(mb.group(4)),
+                        0
+                    );
+                    // Orden descendente: más reciente primero
+                    return db.compareTo(da);
+                }
+                // Si no coincide el patrón, dejar al final
+                if (ma.matches()) return -1;
+                if (mb.matches()) return 1;
+                return a.compareTo(b);
+            });
 
             // Crear el objeto EventsFile con todos los directorios encontrados
             EventsFile eventsFile = EventsFile.builder()

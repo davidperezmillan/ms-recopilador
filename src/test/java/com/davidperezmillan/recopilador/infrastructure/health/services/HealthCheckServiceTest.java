@@ -1,9 +1,9 @@
-package com.davidperezmillan.recopilador.infrastructure.health;
+package com.davidperezmillan.recopilador.infrastructure.health.services;
+
+import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.File;
 
 class HealthCheckServiceTest {
     private final HealthCheckService service = new HealthCheckService();
