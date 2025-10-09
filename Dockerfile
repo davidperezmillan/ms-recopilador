@@ -8,8 +8,6 @@ ARG JAR_FILE=target/ms-recopilador-0.0.1-SNAPSHOT.jar
 # Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-#Crear el directorio de la aplicación
-run mkdir /health
 
 # Copiar el archivo JAR generado en el contenedor
 COPY ${JAR_FILE} app.jar
