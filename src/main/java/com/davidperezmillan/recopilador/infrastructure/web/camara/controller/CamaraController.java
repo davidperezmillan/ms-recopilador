@@ -2,7 +2,7 @@ package com.davidperezmillan.recopilador.infrastructure.web.camara.controller;
 
 import com.davidperezmillan.recopilador.apllication.usecases.CameraHealthUseCase;
 import com.davidperezmillan.recopilador.domain.models.Camaras;
-import com.davidperezmillan.recopilador.infrastructure.health.HealthStatus;
+import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
 import com.davidperezmillan.recopilador.infrastructure.web.camara.dtos.EventsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
