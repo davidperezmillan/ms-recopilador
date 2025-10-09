@@ -110,23 +110,15 @@ public class CameraHealthService implements CameraHealthUseCase {
         List<EventRecord> eventFile = eventsResponse.getRecords();
         String[] eventHost = healthStatus.getEventsFile().getEventDir();
 
-        firstEventFile = eventFile.get(0).getDirname();
-        firstEventHost = eventHost.length > 0 ? eventHost[0] : null;
+        String firstEventFile = eventFile.get(0).getDirname();
+        String firstEventHost = eventHost.length > 0 ? eventHost[0] : null;
         log.info("First event from file system: " + firstEventFile);
         log.info("First event from host: " + firstEventHost);
-        if (firstEventFile != null && firstEventHost != null && firstEventHost.contains(firstEventFile)) {
-            log.info("First events match: " + firstEventHost + " contains " + firstEventFile);
-            firstEventsMatch = true;
-        } else {
-            log.warn("First events do not match: " + firstEventHost + " does not contain " + firstEventFile);
-            firstEventsMatch = false;
+        boolean firstEventsMatch = false;
+        if (firstEventHost != null && firstEventFile != null) {
+            firstEventsMatch = firstEventHost.contains(firstEventFile);
         }
-
-        log.info("Comparing events from host and file system:");
-        log.info("Events from host: " + eventHost);
-        log.info("Events from file system: " + eventFile);
-
-
+        log.info("Do the first events match? " + firstEventsMatch);
         /*
         boolean allEventsMatch = eventFile.stream()
                 .allMatch(event -> {
@@ -141,7 +133,7 @@ public class CameraHealthService implements CameraHealthUseCase {
 
          */
 
-        healthStatus.setHealthy(allEventsMatch ? StatusHealthyEnum.HEALTHY : StatusHealthyEnum.DEGRADED);
+        healthStatus.setHealthy(firstEventsMatch ? StatusHealthyEnum.HEALTHY : StatusHealthyEnum.DEGRADED);
         log.info("Final health status after comparing events: " + healthStatus.getHealthy());
         return healthStatus;
     }
