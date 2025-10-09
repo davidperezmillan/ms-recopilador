@@ -8,12 +8,14 @@ import com.davidperezmillan.recopilador.infrastructure.health.models.StatusHealt
 import com.davidperezmillan.recopilador.infrastructure.health.services.HealthHostService;
 import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
 import com.davidperezmillan.recopilador.infrastructure.health.services.HealthWebService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 
 @Service
+@Log4j2
 public class CameraHealthService implements CameraHealthUseCase {
     
     private final HealthHostService healthHostService;
@@ -108,20 +110,24 @@ public class CameraHealthService implements CameraHealthUseCase {
         List<EventRecord> eventFile = eventsResponse.getRecords();
         String[] eventHost = healthStatus.getEventsFile().getEventDir();
 
-        // Comparar los eventos del archivo con los eventos del host
-        for (EventRecord event : eventFile) {
-            boolean encontrado = false;
-            for (String hostEvent : eventHost) {
-                if (event.getDirname().equalsIgnoreCase(hostEvent)) {
-                    encontrado = true;
-                    break;
-                }
-            }
-            if (!encontrado) {
-                healthStatus.setHealthy(StatusHealthyEnum.DEGRADED);
-                return healthStatus;
-            }
-        }
+        logger.info("Comparing events from host and file system:");
+        logger.info("Events from host: " + eventHost);
+        logger.info("Events from file system: " + eventFile);
+
+
+        boolean allEventsMatch = eventFile.stream()
+                .allMatch(event -> {
+                    String eventName = event.getName();
+                    for (String dirName : eventHost) {
+                        if (dirName.contains(eventName)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+        healthStatus.setHealthy(allEventsMatch ? StatusHealthyEnum.HEALTHY : StatusHealthyEnum.DEGRADED);
+        logger.info("Final health status after comparing events: " + healthStatus.getHealthy());
         return healthStatus;
     }
 }
