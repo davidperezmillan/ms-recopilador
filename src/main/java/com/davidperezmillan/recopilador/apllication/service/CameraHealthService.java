@@ -110,14 +110,21 @@ public class CameraHealthService implements CameraHealthUseCase {
         List<EventRecord> eventFile = eventsResponse.getRecords();
         String[] eventHost = healthStatus.getEventsFile().getEventDir();
 
-        logger.info("Comparing events from host and file system:");
-        logger.info("Events from host: " + eventHost);
-        logger.info("Events from file system: " + eventFile);
+        log.info("Comparing events from host and file system:");
+        log.info("Events from host: " + eventHost);
+        log.info("Events from file system: " + eventFile);
+
+        for (String dirName : eventHost) {
+            log.info("Host event directory: " + dirName);
+        }
+        for (EventRecord event : eventFile) {
+            log.info("File system event directory: " + event.getDirname());
+        }
 
 
         boolean allEventsMatch = eventFile.stream()
                 .allMatch(event -> {
-                    String eventName = event.getName();
+                    String eventName = event.getDirname();
                     for (String dirName : eventHost) {
                         if (dirName.contains(eventName)) {
                             return true;
@@ -127,7 +134,7 @@ public class CameraHealthService implements CameraHealthUseCase {
                 });
 
         healthStatus.setHealthy(allEventsMatch ? StatusHealthyEnum.HEALTHY : StatusHealthyEnum.DEGRADED);
-        logger.info("Final health status after comparing events: " + healthStatus.getHealthy());
+        log.info("Final health status after comparing events: " + healthStatus.getHealthy());
         return healthStatus;
     }
 }
