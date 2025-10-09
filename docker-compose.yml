@@ -2,9 +2,9 @@ services:
     app:
         container_name: ${CONTAINER_NAME} # Nombre del contenedor: ${IMAGE_NAME}
         image: ${IMAGE_NAME}:${VERSION}  # Usar la variable IMAGE_NAME del archivo .env
-        build:
-            context: .
-            dockerfile: Dockerfile
+        # build:
+        #     context: .
+        #     dockerfile: Dockerfile
         ports:
             - "${PORT}:8080"  # Usar la variable PORT del archivo .env
         environment:
