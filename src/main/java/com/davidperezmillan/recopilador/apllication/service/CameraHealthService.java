@@ -2,7 +2,8 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.CameraHealthUseCase;
 import com.davidperezmillan.recopilador.domain.models.Camaras;
-import com.davidperezmillan.recopilador.infrastructure.health.services.HealthCheckService;
+import com.davidperezmillan.recopilador.infrastructure.health.models.StatusHealthyEnum;
+import com.davidperezmillan.recopilador.infrastructure.health.services.HealthHostService;
 import com.davidperezmillan.recopilador.infrastructure.health.models.HealthStatus;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +12,10 @@ import java.util.HashMap;
 @Service
 public class CameraHealthService implements CameraHealthUseCase {
     
-    private final HealthCheckService healthCheckService;
+    private final HealthHostService healthHostService;
     
-    public CameraHealthService(HealthCheckService healthCheckService) {
-        this.healthCheckService = healthCheckService;
+    public CameraHealthService(HealthHostService healthHostService) {
+        this.healthHostService = healthHostService;
     }
     
 
@@ -29,8 +30,8 @@ public class CameraHealthService implements CameraHealthUseCase {
         // Buscar la cámara por nombre
         for (Camaras camara : Camaras.values()) {
             if (camara.getNombre().equalsIgnoreCase(cameraName)) {
-                HealthStatus statusWeb = healthCheckService.checkWebPageHealth(camara.getUrl());
-                HealthStatus statusFile = healthCheckService.checkFileSystemHealth(camara.getDirectorio());
+                HealthStatus statusWeb = healthHostService.checkWebPageHealth(camara.getUrl());
+                HealthStatus statusFile = healthHostService.checkFileSystemHealth(camara.getDirectorio());
                 return mergeHealthStatuses(statusWeb, statusFile);
             }
         }
@@ -38,8 +39,8 @@ public class CameraHealthService implements CameraHealthUseCase {
         // Si no se encuentra por nombre, intentar por enum value
         try {
             Camaras camara = Camaras.valueOf(cameraName.toUpperCase());
-            HealthStatus statusWeb = healthCheckService.checkWebPageHealth(camara.getUrl());
-            HealthStatus statusFile = healthCheckService.checkFileSystemHealth(camara.getDirectorio());
+            HealthStatus statusWeb = healthHostService.checkWebPageHealth(camara.getUrl());
+            HealthStatus statusFile = healthHostService.checkFileSystemHealth(camara.getDirectorio());
             return mergeHealthStatuses(statusWeb, statusFile);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Cámara no encontrada: " + cameraName);
@@ -55,8 +56,8 @@ public class CameraHealthService implements CameraHealthUseCase {
         HashMap<Camaras, HealthStatus> healthChecks = new HashMap<>();
 
         for (Camaras camara : Camaras.values()) {
-            HealthStatus statusWeb = healthCheckService.checkWebPageHealth(camara.getUrl());
-            HealthStatus statusFile = healthCheckService.checkFileSystemHealth(camara.getDirectorio());
+            HealthStatus statusWeb = healthHostService.checkWebPageHealth(camara.getUrl());
+            HealthStatus statusFile = healthHostService.checkFileSystemHealth(camara.getDirectorio());
             HealthStatus status = mergeHealthStatuses(statusWeb, statusFile);
             healthChecks.put(camara, status);
         }
@@ -69,8 +70,12 @@ public class CameraHealthService implements CameraHealthUseCase {
                 .detailsWebsite(statusWeb.getDetailsWebsite())
                 .eventsFile(statusFile.getEventsFile())
                 .build();
-        if (statusWeb.isHealthy() && statusFile.isHealthy()) {
-            response.setHealthy(true);
+        if (statusWeb.getHealthy() == null || statusFile.getHealthy() == null) {
+            response.setHealthy(null);
+        } else if (statusWeb.getHealthy() == StatusHealthyEnum.HEALTHY && statusFile.getHealthy() == StatusHealthyEnum.HEALTHY) {
+            response.setHealthy(StatusHealthyEnum.HEALTHY);
+        } else {
+            response.setHealthy(StatusHealthyEnum.UNHEALTHY);
         }
         return response;
     }
