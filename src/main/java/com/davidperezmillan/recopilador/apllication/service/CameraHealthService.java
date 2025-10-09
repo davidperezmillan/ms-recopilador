@@ -2,6 +2,7 @@ package com.davidperezmillan.recopilador.apllication.service;
 
 import com.davidperezmillan.recopilador.apllication.usecases.CameraHealthUseCase;
 import com.davidperezmillan.recopilador.domain.models.Camaras;
+import com.davidperezmillan.recopilador.infrastructure.health.models.EventRecord;
 import com.davidperezmillan.recopilador.infrastructure.health.models.EventsResponse;
 import com.davidperezmillan.recopilador.infrastructure.health.models.StatusHealthyEnum;
 import com.davidperezmillan.recopilador.infrastructure.health.services.HealthHostService;
@@ -10,6 +11,7 @@ import com.davidperezmillan.recopilador.infrastructure.health.services.HealthWeb
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class CameraHealthService implements CameraHealthUseCase {
@@ -72,8 +74,12 @@ public class CameraHealthService implements CameraHealthUseCase {
             HealthStatus statusWeb = healthHostService.checkWebPageHealth(camara.getUrl());
             HealthStatus statusFile = healthHostService.checkFileSystemHealth(camara.getDirectorio());
             HealthStatus status = mergeHealthStatuses(statusWeb, statusFile);
-            healthChecks.put(camara, status);
+            HealthStatus statusEnriquecido = compareEvents(checkCamaraEvents(camara.getNombre()), status);
+            healthChecks.put(camara, statusEnriquecido);
+
         }
+
+
         return healthChecks;
 
     }
@@ -91,5 +97,33 @@ public class CameraHealthService implements CameraHealthUseCase {
             response.setHealthy(StatusHealthyEnum.UNHEALTHY);
         }
         return response;
+    }
+
+
+    private HealthStatus compareEvents(EventsResponse eventsResponse, HealthStatus healthStatus) {
+        if (eventsResponse.getRecords() == null || eventsResponse.getRecords().isEmpty()) {
+            healthStatus.setHealthy(StatusHealthyEnum.DEGRADED);
+            return healthStatus;
+        }
+        List<EventRecord> eventFile = eventsResponse.getRecords();
+        String[] eventHost = healthStatus.getEventsFile().getEventDir();
+
+        // Comparar los eventos del archivo con los eventos del host
+        for (EventRecord event : eventFile) {
+            boolean encontrado = false;
+            for (String hostEvent : eventHost) {
+                if (event.getDirname().equalsIgnoreCase(hostEvent)) {
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                healthStatus.setHealthy(StatusHealthyEnum.DEGRADED);
+                break;
+            }else{
+                healthStatus.setHealthy(StatusHealthyEnum.HEALTHY);
+            }
+        }
+        return healthStatus;
     }
 }
