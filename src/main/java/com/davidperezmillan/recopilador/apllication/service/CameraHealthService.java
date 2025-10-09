@@ -119,9 +119,7 @@ public class CameraHealthService implements CameraHealthUseCase {
             }
             if (!encontrado) {
                 healthStatus.setHealthy(StatusHealthyEnum.DEGRADED);
-                break;
-            }else{
-                healthStatus.setHealthy(StatusHealthyEnum.HEALTHY);
+                return healthStatus;
             }
         }
         return healthStatus;
