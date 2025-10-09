@@ -2,9 +2,9 @@ services:
     app:
         container_name: ${CONTAINER_NAME} # Nombre del contenedor: ${IMAGE_NAME}
         image: ${IMAGE_NAME}:${VERSION}  # Usar la variable IMAGE_NAME del archivo .env
-#        build:
-#            context: .
-#            dockerfile: Dockerfile
+        build:
+            context: .
+            dockerfile: Dockerfile
         ports:
             - "${PORT}:8080"  # Usar la variable PORT del archivo .env
         environment:
@@ -15,5 +15,5 @@ services:
             DB_PASSWORD: "${DB_PASSWORD}" # Usar la variable DB_PASSWORD del archivo .env
             HEALTH_DIR: "${HEALTH_DIR}" # Usar la variable MEDIA_DIR del archivo .env
         volumes:
-            -   /health:${HEALTH_DIR}
+            -   ${HEALTH_DIR}:/health
         restart: always
