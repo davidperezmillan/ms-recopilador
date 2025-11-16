@@ -1,5 +1,5 @@
 # Usar una imagen de base de OpenJDK con una versión JDK apropiada
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-alpine
 LABEL authors="david"
 
 # Argumento para pasar el nombre del archivo JAR (esto lo hace genérico)
