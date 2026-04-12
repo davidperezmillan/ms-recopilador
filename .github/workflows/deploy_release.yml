@@ -55,4 +55,6 @@ jobs:
         run: echo ${{ vars.WEBHOOKS_STACK_RELEASE }}
 
       - name: Deploy to Portainer
-        run: curl -X POST ${{ vars.WEBHOOKS_STACK_RELEASE }}
+        uses: ./.github/actions/deploy-to-portainer
+        with:
+          webhook-url: ${{ vars.WEBHOOKS_STACK_RELEASE }}

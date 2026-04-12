@@ -1,0 +1,13 @@
+name: 'Deploy to Portainer'
+description: 'Deploy a stack in Portainer using webhook'
+inputs:
+  webhook-url:
+    description: 'The Portainer webhook URL'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Deploy to Portainer
+      run: curl -X POST ${{ inputs.webhook-url }}
+      shell: bash
+
