@@ -4,6 +4,11 @@ server:
 app:
     health:
         directory: /health
+    nextcloud:
+        url: ${NEXTCLOUD_URL:http://localhost}
+        username: ${NEXTCLOUD_USERNAME:admin}
+        token: ${NEXTCLOUD_TOKEN:changeme}
+        dav-path: /remote.php/dav/files/
 
 spring:
     application:

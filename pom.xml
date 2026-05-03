@@ -106,6 +106,13 @@
             <version>2.5.0</version>
         </dependency>
 
+        <!-- WebDAV client - Sardine -->
+        <dependency>
+            <groupId>com.github.lookfirst</groupId>
+            <artifactId>sardine</artifactId>
+            <version>5.12</version>
+        </dependency>
+
         <!-- TEST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
