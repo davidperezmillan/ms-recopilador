@@ -3,8 +3,8 @@ package com.davidperezmillan.recopilador.domain.models;
 public enum Camaras {
     SALON("http://192.168.68.127", "salon", "salon"),
     HABITACION("http://192.168.68.128", "hab", "habitacion"),
-
-    CAM2("http://192.168.68.129", "cam2", "camara2"),;
+    CAM2("http://192.168.68.129", "cam2", "camara2"),
+    AINARA("http://192.168.68.131", "ainara", "ainara");
 
     private final String url;
     private final String nombre;
